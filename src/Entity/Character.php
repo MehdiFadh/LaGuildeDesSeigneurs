@@ -45,6 +45,9 @@ class Character
     #[ORM\Column(length: 20)]
     private ?string $kind = null;
 
+    #[ORM\Column(length: 40)]
+    private ?string $identifier = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -171,6 +174,18 @@ class Character
     public function setKind(string $kind): static
     {
         $this->kind = $kind;
+
+        return $this;
+    }
+
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(string $identifier): static
+    {
+        $this->identifier = $identifier;
 
         return $this;
     }
