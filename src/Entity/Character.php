@@ -12,28 +12,28 @@ class Character
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id = 1;
 
     #[ORM\Column(length: 20)]
-    private ?string $name = null;
+    private ?string $name = 'Anardil';
 
     #[ORM\Column(length: 50)]
-    private ?string $surname = null;
+    private ?string $surname = 'Amie du soleil';
 
     #[ORM\Column(length: 20, nullable: true)]
-    private ?string $caste = null;
+    private ?string $caste = 'Magicien';
 
     #[ORM\Column(length: 20, nullable: true)]
-    private ?string $knowledge = null;
+    private ?string $knowledge = 'Sciences';
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $intelligence = null;
+    private ?int $intelligence = 180;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $strength = null;
+    private ?int $strength = 180;
 
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $image = null;
+    private ?string $image = '/dames/anardil.webp';
 
     public function getId(): ?int
     {
