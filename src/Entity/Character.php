@@ -35,6 +35,15 @@ class Character
     #[ORM\Column(length: 50, nullable: true)]
     private ?string $image = '/dames/anardil.webp';
 
+    #[ORM\Column]
+    private ?\DateTime $creation = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $slug = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $kind = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -127,6 +136,42 @@ class Character
     public function toArray()
     {
         return get_object_vars($this);
+    }
+
+    public function getCreation(): ?\DateTime
+    {
+        return $this->creation;
+    }
+
+    public function setCreation(\DateTime $creation): static
+    {
+        $this->creation = $creation;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getKind(): ?string
+    {
+        return $this->kind;
+    }
+
+    public function setKind(string $kind): static
+    {
+        $this->kind = $kind;
+
+        return $this;
     }
 
 }
