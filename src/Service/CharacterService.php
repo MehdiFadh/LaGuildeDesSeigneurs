@@ -31,4 +31,15 @@ class CharacterService implements CharacterServiceInterface
         return $character;
     }
 
+    // Finds all the characters
+    public function findAll(): array
+    {
+        $charactersFinal = [];
+        $characters = $this->characterRepository->findAll();
+        foreach ($characters as $character) {
+            $charactersFinal[] = $character->toArray();
+        }
+        return $charactersFinal;
+    }
+
 }

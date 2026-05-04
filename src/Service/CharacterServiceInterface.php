@@ -5,4 +5,8 @@ interface CharacterServiceInterface
 {
 // Creates the character
 public function create(): Character;
+
+// Finds all the characters
+public function findAll(): array;
+
 }

@@ -10,6 +10,15 @@ use App\Service\CharacterServiceInterface;
 
 final class CharacterController extends AbstractController
 {
+
+    #[Route('/characters/', name: 'app_character_index', methods: ['GET'])]
+    public function index(): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('characterIndex', null);
+        $characters = $this->characterService->findAll();
+        return new JsonResponse($characters);
+    }
+
     #[Route('/characters/{identifier:character}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
     public function display(Character $character): JsonResponse
     {
