@@ -62,6 +62,7 @@ class CharacterService implements CharacterServiceInterface
     public function delete(Character $character): void
     {
         $this->em->remove($character);
+        $this->em->flush();
     }
 
 }
