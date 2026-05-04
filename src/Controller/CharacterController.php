@@ -13,6 +13,7 @@ final class CharacterController extends AbstractController
     #[Route('/characters/{identifier:character}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
     public function display(Character $character): JsonResponse
     {
+        $this->denyAccessUnlessGranted('characterDisplay', $character);
         return new JsonResponse($character->toArray());
     }
 
@@ -20,6 +21,7 @@ final class CharacterController extends AbstractController
     // "methods: ['POST']" permet d'interdire GET pour la création
     public function create(): JsonResponse
     {
+        $this->denyAccessUnlessGranted('characterCreate', null);
         $character = $this->characterService->create();
         $response = new JsonResponse($character->toArray(), JsonResponse::HTTP_CREATED);
         $url = $this->generateUrl(
