@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Character;
+use App\Entity\Building;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
@@ -16,6 +17,7 @@ class AppFixtures extends Fixture
 
         $this->createRandomCharacters($manager);
         $this->createJsonCharacters($manager);
+        $this->createJsonBuildings($manager);
     }
 
     public function createRandomCharacters(ObjectManager $manager): void
@@ -69,5 +71,35 @@ class AppFixtures extends Fixture
         private SluggerInterface $slugger,
     ){
         
+    }
+
+    public function createJsonBuildings(ObjectManager $manager){
+        $buildings = json_decode(file_get_contents('https://la-guilde-des-seigneurs.com/json/buildings.json'), true);
+        foreach ($buildings as $buildingData) {
+            $manager->persist($this->setBuilding($buildingData));
+        }
+        $manager->flush();
+    }
+
+    public function setBuilding(array $buildingData): Building
+    {
+        $building = new Building();
+        foreach ($buildingData as $key => $value) {
+            $method = 'set' . ucfirst($key);
+            if (method_exists($building, $method)) {
+                $building->$method($value ?? null);
+            }
+        }
+        $building->setSlug($this->slugger->slug($buildingData['name'])->lower());
+        $building->setIdentifier(hash('sha1', uniqid()));
+        $building->setCreation(new \DateTime());
+        $building->setModification(new \DateTime());
+        
+        // Random stars if not provided
+        if (!isset($buildingData['stars'])) {
+            $building->setStars(rand(1, 5));
+        }
+
+        return $building;
     }
 }
