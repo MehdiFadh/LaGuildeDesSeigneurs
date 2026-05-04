@@ -41,6 +41,27 @@ final class CharacterController extends AbstractController
         return $response;
     }
 
+    #[
+        Route('/characters/{identifier:character}',
+        requirements: ['identifier' => '^([a-z0-9]{40})$'],
+        name: 'app_character_update',
+        methods: ['PUT'])
+    ]
+
+
+    public function update(Character $character): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('characterUpdate', $character);
+        $this->characterService->update($character);
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
+    public function delete(Character $character){
+        $this->denyAccessUnlessGranted('characterDelete', $character);
+        $this->characterService->delete($character);
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
     public function __construct(
         private CharacterServiceInterface $characterService
     ) {

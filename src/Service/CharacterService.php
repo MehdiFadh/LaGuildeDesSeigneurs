@@ -10,7 +10,8 @@ class CharacterService implements CharacterServiceInterface
     public function __construct(
         private CharacterRepository $characterRepository,
         private EntityManagerInterface $em,
-    ) {}
+    ) {
+    }
     // Creates the character
     public function create(): Character
     {
@@ -40,6 +41,27 @@ class CharacterService implements CharacterServiceInterface
             $charactersFinal[] = $character->toArray();
         }
         return $charactersFinal;
+    }
+
+    public function update(Character $character): void
+    {
+        $character->setKind('Seigneur');
+        $character->setName('Gorthol');
+        $character->setSlug('gorthol');
+        $character->setSurname('Heaume de terreur');
+        $character->setCaste('Chevalier');
+        $character->setKnowledge('Diplomatie');
+        $character->setIntelligence(140);
+        $character->setStrength(140);
+        $character->setImage('/seigneurs/gorthol.webp');
+        // $character->setIdentifier(hash('sha1', uniqid())) -> supprimé pour ne pas le changer
+        $this->em->persist($character);
+        $this->em->flush();
+    }
+
+    public function delete(Character $character): void
+    {
+        $this->em->remove($character);
     }
 
 }

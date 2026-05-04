@@ -17,10 +17,16 @@ final class CharacterVoter extends Voter
 
     public const CHARACTER_INDEX = 'characterIndex';
 
+    public const CHARACTER_UPDATE = 'characterUpdate';
+
+    public const CHARACTER_DELETE = 'characterDelete';
+
     private const ATTRIBUTES = [
+        self::CHARACTER_UPDATE,
         self::CHARACTER_CREATE,
         self::CHARACTER_DISPLAY,
         self::CHARACTER_INDEX,
+        self::CHARACTER_DELETE,
     ];
 
     protected function supports(string $attribute, mixed $subject): bool
@@ -39,9 +45,17 @@ final class CharacterVoter extends Voter
                 return $this->canCreate($token, $subject);
                 break;
 
+            case self::CHARACTER_UPDATE:
+                return $this->canUpdate($token, $subject);
+                break;
+
             case self::CHARACTER_DISPLAY:
                 case self::CHARACTER_INDEX:
                 return $this->canDisplay($token, $subject);
+                break;
+            
+            case self::CHARACTER_DELETE:
+                return $this->canDelete($token, $subject);
                 break;
         }
 
@@ -54,6 +68,14 @@ final class CharacterVoter extends Voter
     }
 
     private function canCreate($token, $subject){
+        return true;
+    }
+
+    private function canUpdate($token, $subject){
+        return true;
+    }
+
+    private function canDelete($token, $subject){
         return true;
     }
 }

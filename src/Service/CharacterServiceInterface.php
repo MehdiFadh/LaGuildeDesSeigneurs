@@ -9,4 +9,8 @@ public function create(): Character;
 // Finds all the characters
 public function findAll(): array;
 
+public function update(Character $character): void;
+
+public function delete(Character $character): void;
+
 }
