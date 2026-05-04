@@ -89,6 +89,7 @@ class CharacterControllerTest extends WebTestCase
     public function assertIdentifier()
     {
         $this->assertArrayHasKey('identifier', $this->content);
+        $this->assertArrayHasKey('modification', $this->content);
     }
 
     public function defineIdentifier()

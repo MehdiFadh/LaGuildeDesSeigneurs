@@ -34,6 +34,7 @@ class AppFixtures extends Fixture
             $character->setIdentifier(hash('sha1', uniqid()));
             $character->setImage('/' . strtolower($character->getKind()) . 's/' . strtolower($character->getKind()) . '.webp');
             $character->setCreation(new \DateTime());
+            $character->setModification(new \DateTime());
             $manager->persist($character);
         }
         $manager->flush();
@@ -60,6 +61,7 @@ class AppFixtures extends Fixture
         $character->setSlug($this->slugger->slug($characterData['name'])->lower());
         $character->setIdentifier(hash('sha1', uniqid()));
         $character->setCreation(new \DateTime());
+        $character->setModification(new \DateTime());
         return $character;
     }
 
