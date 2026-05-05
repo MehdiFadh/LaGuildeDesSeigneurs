@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`character`')]
 class Character
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -96,6 +97,9 @@ class Character
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $modification = null;
+
+    #[ORM\ManyToOne(inversedBy: 'characters')]
+    private ?Building $building = null;
 
     public function getId(): ?int
     {
@@ -198,11 +202,6 @@ class Character
         return $this;
     }
 
-    public function toArray()
-    {
-        return get_object_vars($this);
-    }
-
     public function getCreation(): ?\DateTime
     {
         return $this->creation;
@@ -250,5 +249,18 @@ class Character
 
         return $this;
     }
+
+    public function getBuilding(): ?Building
+    {
+        return $this->building;
+    }
+
+    public function setBuilding(?Building $building): static
+    {
+        $this->building = $building;
+
+        return $this;
+    }
+
 
 }

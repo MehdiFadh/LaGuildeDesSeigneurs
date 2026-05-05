@@ -15,4 +15,11 @@ interface BuildingServiceInterface
 
     public function submit(Building $building, $formName, $data);
     public function update(Building $building, string $data): void;
+
+    // Serializes the object(s)
+    public function serializeJson($object);
+
+    // Serializes the object(s)
+    public function serializeJson($object);
+
 }

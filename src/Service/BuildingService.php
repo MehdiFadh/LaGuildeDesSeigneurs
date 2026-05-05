@@ -12,6 +12,9 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Exception\CircularReferenceException;
 
 class BuildingService implements BuildingServiceInterface
 {
@@ -20,6 +23,7 @@ class BuildingService implements BuildingServiceInterface
         private FormFactoryInterface $formFactory,
         private SluggerInterface $slugger,
         private ValidatorInterface $validator,
+        private SerializerInterface $serializer,
         private EntityManagerInterface $em,
     ) {
     }
@@ -27,13 +31,9 @@ class BuildingService implements BuildingServiceInterface
     public function create(string $data): Building
     {
         $building = new Building();
-
         $this->submit($building, BuildingType::class, $data);
-
         $building->setSlug($this->slugger->slug($building->getName())->lower());
-
         $building->setPrice(200);
-
         $building->setIdentifier(hash('sha1', uniqid()));
         $building->setCreation(new DateTime());
         $building->setModification(new DateTime());
@@ -47,12 +47,8 @@ class BuildingService implements BuildingServiceInterface
 
     public function findAll(): array
     {
-        $buildingsFinal = [];
-        $buildings = $this->buildingRepository->findAll();
-        foreach ($buildings as $building) {
-            $buildingsFinal[] = $building->toArray();
-        }
-        return $buildingsFinal;
+        // On en n'a plus besoin car la sérialisation est récursive
+        return $this->buildingRepository->findAll();
     }
 
     public function submit(Building $building, $formName, $data)
@@ -100,9 +96,23 @@ class BuildingService implements BuildingServiceInterface
         $errors = $this->validator->validate($building);
         if (count($errors) > 0) {
             $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
-            $errorMsg .= json_encode($building->toArray());
+            $errorMsg .= json_encode($this->serializeJson($building));
             $errorMsg = 'Missing data for Entity -> ' . json_encode($building->toArray());
             throw new UnprocessableEntityHttpException($errorMsg);
         }
+    }
+
+    // Serializes the object(s)
+    public function serializeJson($object)
+    {
+        $context = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function (object $object, ?string $format, array $context): string {
+                if ($object instanceof Building || $object instanceof Character) {
+                    return $object->getIdentifier();
+                }
+                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
+            },
+        ];
+        return $this->serializer->serialize($object, 'json', $context);
     }
 }

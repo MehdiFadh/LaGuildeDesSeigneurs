@@ -15,4 +15,16 @@ class BuildingRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Building::class);
     }
+
+    public function findOneByIdentifier(string $identifier): ?Building
+    {
+        return $this->createQueryBuilder('b')
+            ->select('b', 'c')
+            ->leftJoin('b.characters', 'c')
+            ->where('b.identifier = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

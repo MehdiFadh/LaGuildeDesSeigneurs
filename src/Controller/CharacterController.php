@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Character;
 use App\Service\CharacterServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 final class CharacterController extends AbstractController
 {
@@ -16,15 +17,16 @@ final class CharacterController extends AbstractController
     public function index(): JsonResponse
     {
         $this->denyAccessUnlessGranted('characterIndex', null);
-        $characters = $this->characterService->findAll();
-        return new JsonResponse($characters);
+        return JsonResponse::fromJsonString($this->characterService->findAllJson());
     }
 
-    #[Route('/characters/{identifier:character}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
-    public function display(Character $character): JsonResponse
-    {
+    #[Route('/characters/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
+    public function display(
+        #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
+        Character $character
+    ): JsonResponse {
         $this->denyAccessUnlessGranted('characterDisplay', $character);
-        return new JsonResponse($character->toArray());
+        return JsonResponse::fromJsonString($this->characterService->serializeJson($character));
     }
 
     #[Route('/characters/', name: 'app_character_create', methods: ['POST'])]
@@ -33,7 +35,7 @@ final class CharacterController extends AbstractController
     {
         $this->denyAccessUnlessGranted('characterCreate', null);
         $character = $this->characterService->create($request->getContent());
-        $response = new JsonResponse($character->toArray(), JsonResponse::HTTP_CREATED);
+        $response = JsonResponse::fromJsonString($this->characterService->serializeJson($character), JsonResponse::HTTP_CREATED);
         $url = $this->generateUrl(
             'app_character_display',
             ['identifier' => $character->getIdentifier()]
