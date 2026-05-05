@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Exception\CircularReferenceException;
+use App\Event\CharacterEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CharacterService implements CharacterServiceInterface
 {
@@ -23,6 +25,7 @@ class CharacterService implements CharacterServiceInterface
         private FormFactoryInterface $formFactory,
         private ValidatorInterface $validator,
         private SluggerInterface $slugger,
+        private EventDispatcherInterface $dispatcher,
         private SerializerInterface $serializer,
     ) {
     }
@@ -31,6 +34,12 @@ class CharacterService implements CharacterServiceInterface
     {
         $character = new Character();
         $this->submit($character, CharacterType::class, $data);
+        // Dispatch created event
+        dump($character); // Pour voir l'objet avant modification
+        $event = new CharacterEvent($character);
+        // Utilisation de la constante définie dans l'Event
+        $this->dispatcher->dispatch($event, CharacterEvent::CHARACTER_CREATED);
+        dd($character); // Pour voir l'objet après modification
         $character->setSlug($this->slugger->slug($character->getName())->lower());
         $character->setIdentifier(hash('sha1', uniqid()));
         $character->setCreation(new DateTime());
@@ -38,6 +47,8 @@ class CharacterService implements CharacterServiceInterface
         $this->isEntityFilled($character);
         $this->em->persist($character);
         $this->em->flush();
+        // Dispatch created post database event
+        $this->dispatcher->dispatch($event, CharacterEvent::CHARACTER_CREATED_POST_DATABASE);
         return $character;
     }
 
@@ -50,6 +61,9 @@ class CharacterService implements CharacterServiceInterface
     public function update(Character $character, string $data): void
     {
         $this->submit($character, CharacterType::class, $data);
+        // Dispatch updated event
+        $event = new CharacterEvent($character);
+        $this->dispatcher->dispatch($event, CharacterEvent::CHARACTER_UPDATED);
         $character->setSlug($this->slugger->slug($character->getName())->lower());
 
 

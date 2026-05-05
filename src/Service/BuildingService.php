@@ -15,6 +15,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Exception\CircularReferenceException;
+use App\Event\BuildingEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class BuildingService implements BuildingServiceInterface
 {
@@ -25,6 +27,7 @@ class BuildingService implements BuildingServiceInterface
         private ValidatorInterface $validator,
         private SerializerInterface $serializer,
         private EntityManagerInterface $em,
+        private EventDispatcherInterface $dispatcher,
     ) {
     }
 
@@ -32,15 +35,19 @@ class BuildingService implements BuildingServiceInterface
     {
         $building = new Building();
         $this->submit($building, BuildingType::class, $data);
+        // Dispatch created event
+        $event = new BuildingEvent($building);
+        $this->dispatcher->dispatch($event, BuildingEvent::BUILDING_CREATED);
         $building->setSlug($this->slugger->slug($building->getName())->lower());
         $building->setPrice(200);
         $building->setIdentifier(hash('sha1', uniqid()));
         $building->setCreation(new DateTime());
         $building->setModification(new DateTime());
         $this->isEntityFilled($building);
-
         $this->em->persist($building);
         $this->em->flush();
+        // Dispatch created post database event
+        $this->dispatcher->dispatch($event, BuildingEvent::BUILDING_CREATED_POST_DATABASE);
 
         return $building;
     }
@@ -74,6 +81,9 @@ class BuildingService implements BuildingServiceInterface
     public function update(Building $building, string $data): void
     {
         $this->submit($building, BuildingType::class, $data);
+        // Dispatch updated event
+        $event = new BuildingEvent($building);
+        $this->dispatcher->dispatch($event, BuildingEvent::BUILDING_UPDATED);
         $building->setSlug($this->slugger->slug($building->getName())->lower());
         $building->setModification(new DateTime());
 
