@@ -81,23 +81,26 @@ class BuildingControllerTest extends WebTestCase
 
     public function testUpdate()
     {
+        // Tests with whole content
         $this->client->request(
             'PUT',
             '/buildings/' . self::$identifier,
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
+            [],// Parameters
+            [],// Files
+            ['CONTENT_TYPE' => 'application/json'],// Server
             <<<JSON
             {
-            "name": "Tour de Guet Améliorée",
-            "caste": "Garde d'Elite",
-            "strength": 150,
-            "image": "/buildings/tour-guet-amelioree.webp"
+            "name": "Château Oakenfield",
+            "caste": "Erudit",
+            "image": "/buildings/chateau-oakenfield.webp",
+            "strength": 2000
             }
             JSON
         );
         $this->assertResponseCode(204);
     }
+
+
 
     public function testDelete()
     {
