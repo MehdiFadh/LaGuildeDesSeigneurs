@@ -11,6 +11,7 @@ use LogicException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class BuildingService implements BuildingServiceInterface
 {
@@ -18,6 +19,7 @@ class BuildingService implements BuildingServiceInterface
         private BuildingRepository $buildingRepository,
         private FormFactoryInterface $formFactory,
         private SluggerInterface $slugger,
+        private ValidatorInterface $validator,
         private EntityManagerInterface $em,
     ) {
     }
@@ -93,15 +95,12 @@ class BuildingService implements BuildingServiceInterface
 
     public function isEntityFilled(Building $building)
     {
-        if (
-            null === $building->getName() ||
-            null === $building->getCaste() ||
-            null === $building->getStrength() ||
-            null === $building->getSlug() ||
-            null === $building->getIdentifier() ||
-            null === $building->getCreation() ||
-            null === $building->getModification()
-        ) {
+        // Vérification du bon fonctionnement en introduisant une erreur
+        $building->setIdentifier('badidentifier'); // Supprimer par la suite
+        $errors = $this->validator->validate($building);
+        if (count($errors) > 0) {
+            $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
+            $errorMsg .= json_encode($building->toArray());
             $errorMsg = 'Missing data for Entity -> ' . json_encode($building->toArray());
             throw new UnprocessableEntityHttpException($errorMsg);
         }

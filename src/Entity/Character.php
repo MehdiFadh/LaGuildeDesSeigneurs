@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CharacterRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: '`character`')]
@@ -16,36 +17,81 @@ class Character
     private ?int $id;
 
     #[ORM\Column(length: 20)]
-    private ?string $name;
+    #[Assert\NotNull] // Pour que ce ne soit pas null
+    #[Assert\NotBlank] // Pour que ce ne soit pas blanc
+    #[Assert\Length( //Définit une taille mini et maxi
+        min: 3,
+        max: 20, // Messages pour customisation, sinon on peut les supprimer
+    )]
+    private ?string $name = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 50, // 50 caractères
+    )]
     private ?string $surname;
 
     #[ORM\Column(length: 20, nullable: true)]
+    // Pas de NotNull et NotBlank puisque le champ est nullable
+    #[Assert\Length(
+        min: 3,
+        max: 20,
+    )]
     private ?string $caste = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(
+        min: 3,
+        max: 20,
+    )]
     private ?string $knowledge = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[Assert\PositiveOrZero] // OU #[Assert\Positive] si on ne veut pas de 0
     private ?int $intelligence = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[Assert\PositiveOrZero]
     private ?int $strength = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\Length(
+        min: 5,
+        max: 50,
+    )]
     private ?string $image = null;
 
     #[ORM\Column]
     private ?\DateTime $creation = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 20,
+    )]
     private ?string $slug = null;
 
     #[ORM\Column(length: 20)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 20,
+    )]
     private ?string $kind = null;
 
     #[ORM\Column(length: 40)]
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 40, // si on veut une taille fixe il suffit
+        max: 40, // de mettre la même valeur pour min et max
+    )]
     private ?string $identifier = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

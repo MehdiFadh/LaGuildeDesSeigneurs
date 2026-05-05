@@ -9,6 +9,7 @@ use LogicException;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CharacterService implements CharacterServiceInterface
 {
@@ -17,6 +18,7 @@ class CharacterService implements CharacterServiceInterface
         private CharacterRepository $characterRepository,
         private EntityManagerInterface $em,
         private FormFactoryInterface $formFactory,
+        private ValidatorInterface $validator,
         private SluggerInterface $slugger,
     ) {
     }
@@ -89,16 +91,12 @@ class CharacterService implements CharacterServiceInterface
     // Checks if the entity has been well filled
     public function isEntityFilled(Character $character)
     {
-        if (
-            null === $character->getKind() ||
-            null === $character->getName() ||
-            null === $character->getSurname() ||
-            null === $character->getSlug() ||
-            null === $character->getIdentifier() ||
-            null === $character->getCreation() ||
-            null === $character->getModification()
-        ) {
-            $errorMsg = 'Missing data for Entity -> ' . json_encode($character->toArray());
+        // Vérification du bon fonctionnement en introduisant une erreur
+        $character->setIdentifier('badidentifier'); // Supprimer par la suite
+        $errors = $this->validator->validate($character);
+        if (count($errors) > 0) {
+            $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
+            $errorMsg .= json_encode($character->toArray());
             throw new UnprocessableEntityHttpException($errorMsg);
         }
     }
