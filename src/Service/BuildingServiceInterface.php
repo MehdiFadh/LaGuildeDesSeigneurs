@@ -6,8 +6,13 @@ use App\Entity\Building;
 
 interface BuildingServiceInterface
 {
-    public function create(): Building;
     public function findAll(): array;
-    public function update(Building $building): void;
+    public function update(Building $building, string $data): void;
     public function delete(Building $building): void;
+
+    public function create(string $data): Building;
+
+    public function isEntityFilled(Building $building);
+
+    public function submit(Building $building, $formName, $data);
 }

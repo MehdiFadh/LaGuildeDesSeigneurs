@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Building;
 use App\Service\BuildingServiceInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 final class BuildingController extends AbstractController
 {
@@ -27,10 +28,10 @@ final class BuildingController extends AbstractController
     }
 
     #[Route('/buildings/', name: 'app_building_create', methods: ['POST'])]
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('buildingCreate', null);
-        $building = $this->buildingService->create();
+        $building = $this->buildingService->create($request->getContent());
         $response = new JsonResponse($building->toArray(), JsonResponse::HTTP_CREATED);
         $url = $this->generateUrl(
             'app_building_display',
@@ -41,10 +42,10 @@ final class BuildingController extends AbstractController
     }
 
     #[Route('/buildings/{identifier:building}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_building_update', methods: ['PUT'])]
-    public function update(Building $building): JsonResponse
+    public function update(Request $request, Building $building): JsonResponse
     {
         $this->denyAccessUnlessGranted('buildingUpdate', $building);
-        $this->buildingService->update($building);
+        $this->buildingService->update($building, $request->getContent());
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 

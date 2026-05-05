@@ -18,9 +18,28 @@ class CharacterControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
-    public function testCreate(): void
+    // Tests creates
+    public function testCreate()
     {
-        $this->client->request('POST', '/characters/');
+        $this->client->request(
+            'POST',
+            '/characters/',
+            [],// Parameters
+            [],// Files
+            ['CONTENT_TYPE' => 'application/json'],// Server
+            <<<JSON
+            {
+            "kind": "Dame",
+            "name": "Anardil",
+            "surname": "Amie du soleil",
+            "caste": "Magicien",
+            "knowledge": "Sciences",
+            "intelligence": 180,
+            "strength": 180,
+            "image": "/dames/anardil.webp"
+            }
+            JSON
+        );
         $this->assertResponseCode(201);
         $this->assertJsonResponse();
         $this->defineIdentifier();
@@ -29,12 +48,11 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        
         $this->client->request('GET', '/characters/' . self::$identifier);
-        
+
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
-        
+
         $this->assertIdentifier();
     }
 
@@ -76,8 +94,28 @@ class CharacterControllerTest extends WebTestCase
 
     public function testUpdate()
     {
-        $this->client->request('PUT', '/characters/' . self::$identifier);
+        // Tests with partial data array
+        $this->client->request(
+            'PUT',
+            '/characters/' . self::$identifier,
+            [],// Parameters
+            [],// Files
+            ['CONTENT_TYPE' => 'application/json'],// Server
+            <<<JSON
+            {
+            "kind": "Seigneur",
+            "name": "Gorthol",
+            "surname": "Heaume de terreur",
+            "caste": "Chevalier",
+            "knowledge": "Diplomatie",
+            "intelligence": 140,
+            "strength": 140,
+            "image": "/seigneurs/gorthol.jpg"
+            }
+            JSON
+        );
         $this->assertResponseCode(204);
+
     }
 
     public function testDelete()

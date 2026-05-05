@@ -17,7 +17,21 @@ class BuildingControllerTest extends WebTestCase
 
     public function testCreate(): void
     {
-        $this->client->request('POST', '/buildings/');
+        $this->client->request(
+            'POST',
+            '/buildings/',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            <<<JSON
+            {
+            "name": "Tour de Guet",
+            "caste": "Garde",
+            "strength": 50,
+            "image": "/buildings/tour-guet.webp"
+            }
+            JSON
+        );
         $this->assertResponseCode(201);
         $this->assertJsonResponse();
         $this->defineIdentifier();
@@ -67,7 +81,21 @@ class BuildingControllerTest extends WebTestCase
 
     public function testUpdate()
     {
-        $this->client->request('PUT', '/buildings/' . self::$identifier);
+        $this->client->request(
+            'PUT',
+            '/buildings/' . self::$identifier,
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            <<<JSON
+            {
+            "name": "Tour de Guet Améliorée",
+            "caste": "Garde d'Elite",
+            "strength": 150,
+            "image": "/buildings/tour-guet-amelioree.webp"
+            }
+            JSON
+        );
         $this->assertResponseCode(204);
     }
 
