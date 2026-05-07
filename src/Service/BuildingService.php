@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\Exception\CircularReferenceException;
@@ -125,6 +126,7 @@ class BuildingService implements BuildingServiceInterface
             },
         ];
         $this->setLinks($object);
+
         return $this->serializer->serialize($object, 'json', $context);
     }
 
@@ -145,13 +147,32 @@ class BuildingService implements BuildingServiceInterface
             foreach ($object->getItems() as $item) {
                 $this->setLinks($item);
             }
+
             return;
         }
         $links = [
             'self' => ['href' => '/buildings/' . $object->getIdentifier()],
             'update' => ['href' => '/buildings/' . $object->getIdentifier()],
-            'delete' => ['href' => '/buildings/' . $object->getIdentifier()]
+            'delete' => ['href' => '/buildings/' . $object->getIdentifier()],
         ];
         $object->setLinks($links);
+    }
+
+    // Gets random images
+    public function getImages(int $number): array
+    {
+        $folder = __DIR__ . '/../../public/images/buildings/';
+        $finder = new Finder();
+        $finder
+            ->files() // On veut des fichiers
+            ->in($folder) // Dans le dossier images
+        ;
+        $images = [];
+        foreach ($finder as $file) {
+            // dump($file); // Si vous voulez voir le contenu de file
+            $images[] = str_replace(__DIR__ . '/../../public', '', $file->getPathname());
+        }
+        shuffle($images);
+        return array_slice($images, 0, $number, true);
     }
 }

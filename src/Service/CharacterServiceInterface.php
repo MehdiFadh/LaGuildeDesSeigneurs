@@ -26,4 +26,9 @@ interface CharacterServiceInterface
 
     // Defines the links for HATEOAS
     public function setLinks($object);
+
+    // Gets random images
+    public function getImages(int $number, ?string $kind = null);
+
+    public function getImagesKind(string $kind, int $number);
 }

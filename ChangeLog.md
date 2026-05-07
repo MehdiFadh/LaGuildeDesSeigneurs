@@ -1,3 +1,3 @@
 ChangeLog
-v0.17
+v0.18
 - Core files

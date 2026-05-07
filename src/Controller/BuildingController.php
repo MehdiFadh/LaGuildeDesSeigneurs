@@ -86,6 +86,36 @@ final class BuildingController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    #[Route(
+        '/buildings/images/{number}',
+        name: 'app_building_images',
+        requirements: ['number' => '^([0-9]{1,2})$'],
+        methods: ['GET']
+    )]
+    #[OA\Parameter(
+        name: 'number',
+        in: 'path',
+        description: 'Number of images',
+        schema: new OA\Schema(type: 'integer'),
+        required: false
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns links for images'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
+    #[OA\Tag(name: 'Building')]
+    public function images(int $number = 1): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('buildingIndex', null);
+        $images = $this->buildingService->getImages($number);
+
+        return new JsonResponse($images);
+    }
+
     public function __construct(
         private BuildingServiceInterface $buildingService,
     ) {

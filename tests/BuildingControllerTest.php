@@ -122,4 +122,12 @@ class BuildingControllerTest extends WebTestCase
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
     }
+
+    public function testImages()
+    {
+        $this->client->request('GET', '/buildings/images');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/buildings/images/3');
+        $this->assertJsonResponse();
+    }
 }

@@ -151,4 +151,24 @@ class CharacterControllerTest extends WebTestCase
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
     }
+
+    // Tests images
+    public function testImages()
+    {
+        $this->client->request('GET', '/characters/images');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/3');
+        $this->assertJsonResponse();
+        // Tests with kind
+        $this->client->request('GET', '/characters/images/dames');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/dames/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/seigneurs/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/tourmenteurs/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/tourmenteuses/3');
+        $this->assertJsonResponse();
+    }
 }

@@ -100,7 +100,6 @@ class Character
     #[ORM\ManyToOne(inversedBy: 'characters')]
     private ?Building $building = null;
 
-
     private array $_links = [];
 
     public function getId(): ?int
