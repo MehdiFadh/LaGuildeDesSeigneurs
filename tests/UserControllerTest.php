@@ -8,6 +8,7 @@ class UserControllerTest extends WebTestCase
 {
     private $client;
     private $content;
+
     public function setUp(): void
     {
         $this->client = static::createClient();
@@ -18,6 +19,7 @@ class UserControllerTest extends WebTestCase
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
     }
+
     // Asserts that a Response is in json
     public function assertJsonResponse()
     {

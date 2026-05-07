@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Service;
+
 use App\Entity\User;
-use App\Repository\UserRepository;
 
 interface UserServiceInterface
 {
@@ -11,7 +11,7 @@ interface UserServiceInterface
 
     // Finds one by email
     public function findOneByEmail(string $token);
+
     // Parses the token
     public function parseToken(string $token);
-
 }

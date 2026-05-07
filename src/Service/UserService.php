@@ -4,19 +4,16 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-
+use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Encoding\ChainedFormatter;
 use Lcobucci\JWT\Encoding\JoseEncoder;
-use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\Builder;
+use Lcobucci\JWT\Token\InvalidTokenStructure;
 use Lcobucci\JWT\Token\Parser;
 use Lcobucci\JWT\Token\UnencryptedToken;
-use Lcobucci\JWT\Token\InvalidTokenStructure;
-use Lcobucci\JWT\Encoding\CannotDecodeContent;
 use Lcobucci\JWT\Token\UnsupportedHeaderFound;
-
-use DateTimeImmutable;
 
 class UserService implements UserServiceInterface
 {
@@ -25,7 +22,7 @@ class UserService implements UserServiceInterface
         $tokenBuilder = (new Builder(new JoseEncoder(), ChainedFormatter::default()));
         $algorithm = new Sha256();
         $signingKey = InMemory::plainText(random_bytes(32)); // voir note sur la sécurité
-        $now = new DateTimeImmutable();
+        $now = new \DateTimeImmutable();
         $token = $tokenBuilder
             ->issuedBy('http://127.0.0.1:8000') // Configures the issuer (iss claim)
             ->permittedFor('http://127.0.0.1:8000') // Configures the audience (aud claim)
@@ -37,6 +34,7 @@ class UserService implements UserServiceInterface
             ->withClaim('email', $user->getEmail()) // Configures claims part
             ->getToken($algorithm, $signingKey) // Builds a new token
         ;
+
         return $token->toString();
     }
 
@@ -46,8 +44,8 @@ class UserService implements UserServiceInterface
         $parser = new Parser(new JoseEncoder());
         try {
             return $parser->parse($token);
-        } catch (CannotDecodeContent | InvalidTokenStructure | UnsupportedHeaderFound $e) {
-            echo 'Oh no, an error: ' . $e->getMessage();
+        } catch (CannotDecodeContent|InvalidTokenStructure|UnsupportedHeaderFound $e) {
+            echo 'Oh no, an error: '.$e->getMessage();
         }
         assert($token instanceof UnencryptedToken);
     }
@@ -59,15 +57,15 @@ class UserService implements UserServiceInterface
         if (null !== $tokenParse) {
             // $tokenParse->claims()->get('email') récupére l'email depuis le token
             $user = $this->userRepository->findOneByEmail($tokenParse->claims()->get('email'));
+
             return null !== $user ? $user->getEmail() : false;
         }
+
         return false;
     }
 
-
     public function __construct(
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
     ) {
     }
-
 }

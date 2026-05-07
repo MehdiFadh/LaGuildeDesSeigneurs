@@ -4,9 +4,9 @@ namespace App\Security\Voter;
 
 use App\Entity\Character;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 
 final class CharacterVoter extends Voter
 {
@@ -58,7 +58,7 @@ final class CharacterVoter extends Voter
                 break;
         }
 
-        throw new \LogicException('Invalid attribute: ' . $attribute);
+        throw new \LogicException('Invalid attribute: '.$attribute);
     }
 
     private function canDisplay($token, $subject)
@@ -80,7 +80,6 @@ final class CharacterVoter extends Voter
     {
         return $this->accessDecisionManager->decide($token, ['ROLE_ADMIN']) || $subject->getUser() === $token->getUser();
     }
-
 
     public function __construct(
         private AccessDecisionManagerInterface $accessDecisionManager,
