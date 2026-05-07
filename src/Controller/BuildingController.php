@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 
 final class BuildingController extends AbstractController
 {
@@ -28,6 +29,7 @@ final class BuildingController extends AbstractController
         schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
         required: true
     )]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function index(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('buildingIndex', null);
@@ -37,6 +39,7 @@ final class BuildingController extends AbstractController
     }
 
     #[Route('/buildings/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_building_display', methods: ['GET'])]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function display(
         #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
         Building $building,

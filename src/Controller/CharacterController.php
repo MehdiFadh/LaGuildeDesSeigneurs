@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 
 final class CharacterController extends AbstractController
 {
@@ -42,6 +43,7 @@ final class CharacterController extends AbstractController
         schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
         required: true
     )]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function index(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('characterIndex', null);
@@ -73,6 +75,7 @@ final class CharacterController extends AbstractController
         description: 'Not found'
     )]
     #[OA\Tag(name: 'Character')]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function display(
         #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
         Character $character,
