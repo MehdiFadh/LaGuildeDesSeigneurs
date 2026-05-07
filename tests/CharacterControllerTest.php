@@ -47,7 +47,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/characters/'.self::$identifier);
+        $this->client->request('GET', '/characters/' . self::$identifier);
 
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
@@ -66,7 +66,20 @@ class CharacterControllerTest extends WebTestCase
     // Tests index
     public function testIndex()
     {
+        // Tests with default values
         $this->client->request('GET', '/characters/');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with page
+        $this->client->request('GET', '/characters/?page=1');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with page and size
+        $this->client->request('GET', '/characters/?page=1&size=1');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with size
+        $this->client->request('GET', '/characters/?size=1');
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
     }
@@ -95,7 +108,7 @@ class CharacterControllerTest extends WebTestCase
         // Tests with partial data array
         $this->client->request(
             'PUT',
-            '/characters/'.self::$identifier,
+            '/characters/' . self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -117,7 +130,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDelete()
     {
-        $this->client->request('DELETE', '/characters/'.self::$identifier);
+        $this->client->request('DELETE', '/characters/' . self::$identifier);
         $this->assertResponseCode(204);
     }
 

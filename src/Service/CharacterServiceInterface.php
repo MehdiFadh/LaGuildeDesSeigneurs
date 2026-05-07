@@ -21,4 +21,6 @@ interface CharacterServiceInterface
     public function submit(Character $character, $formName, $data);
 
     public function update(Character $character, string $data): void;
+
+    public function findAllPaginated($query);
 }

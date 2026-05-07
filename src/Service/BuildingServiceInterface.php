@@ -20,4 +20,7 @@ interface BuildingServiceInterface
 
     // Serializes the object(s)
     public function serializeJson($object);
+
+    // Finds all the buildings paginated
+    public function findAllPaginated($query);
 }
