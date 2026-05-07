@@ -23,4 +23,7 @@ interface BuildingServiceInterface
 
     // Finds all the buildings paginated
     public function findAllPaginated($query);
+    
+    // Defines the links for HATEOAS
+    public function setLinks($object);
 }
