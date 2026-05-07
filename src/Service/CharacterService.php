@@ -9,6 +9,8 @@ use App\Event\CharacterEvent;
 use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -17,8 +19,6 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
-use Knp\Component\Pager\PaginatorInterface;
 
 class CharacterService implements CharacterServiceInterface
 {
@@ -83,7 +83,7 @@ class CharacterService implements CharacterServiceInterface
         $dataArray = is_array($data) ? $data : json_decode($data, true);
         // Bad array
         if (null !== $data && !is_array($dataArray)) {
-            throw new UnprocessableEntityHttpException('Submitted data is not an array -> ' . $data);
+            throw new UnprocessableEntityHttpException('Submitted data is not an array -> '.$data);
         }
         // Submits form
         $form = $this->formFactory->create($formName, $character, ['csrf_protection' => false]);
@@ -91,9 +91,9 @@ class CharacterService implements CharacterServiceInterface
         // Gets errors
         $errors = $form->getErrors();
         foreach ($errors as $error) {
-            $errorMsg = 'Error ' . get_class($error->getCause());
-            $errorMsg .= ' --> ' . $error->getMessageTemplate();
-            $errorMsg .= ' ' . json_encode($error->getMessageParameters());
+            $errorMsg = 'Error '.get_class($error->getCause());
+            $errorMsg .= ' --> '.$error->getMessageTemplate();
+            $errorMsg .= ' '.json_encode($error->getMessageParameters());
             throw new \LogicException($errorMsg);
         }
     }
@@ -110,7 +110,7 @@ class CharacterService implements CharacterServiceInterface
         // Vérification du bon fonctionnement en introduisant une erreur
         $errors = $this->validator->validate($character);
         if (count($errors) > 0) {
-            $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
+            $errorMsg = (string) $errors.'Wrong data for Entity -> ';
             $errorMsg .= json_encode($this->serializeJson($character));
             throw new UnprocessableEntityHttpException($errorMsg);
         }
@@ -124,7 +124,7 @@ class CharacterService implements CharacterServiceInterface
                 if ($object instanceof Building || $object instanceof Character) {
                     return $object->getIdentifier();
                 }
-                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
+                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "'.get_debug_type($object).'".');
             },
         ];
 
