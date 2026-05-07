@@ -7,6 +7,10 @@ use App\Entity\Character;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Entity\User;
+
+
 
 class AppFixtures extends Fixture
 {
@@ -14,9 +18,9 @@ class AppFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-
+        $users = $this->createUsers($manager);
         $jsonBuildings = $this->createJsonBuildings($manager);
-        $this->createJsonCharacters($manager, $jsonBuildings);
+        $this->createJsonCharacters($manager, $jsonBuildings, $users);
         // Les Buildings DOIVENT être faits en premier pour pouvoir être liés aux Characters
         $randomBuildings = $this->createRandomBuildings($manager);
         $this->createRandomCharacters($manager, $randomBuildings);
@@ -28,15 +32,15 @@ class AppFixtures extends Fixture
         for ($i = 0; $i < $totalCharacters; ++$i) {
             $character = new Character();
             $character->setKind(rand(0, 1) ? 'Dame' : 'Seigneur');
-            $character->setName('Anardil'.$i);
-            $character->setSlug('anardil'.$i);
+            $character->setName('Anardil' . $i);
+            $character->setSlug('anardil' . $i);
             $character->setSurname('Amie du soleil');
             $character->setCaste('Magicien');
             $character->setKnowledge('Sciences');
             $character->setIntelligence(mt_rand(100, 200));
             $character->setStrength(mt_rand(100, 200));
             $character->setIdentifier(hash('sha1', uniqid()));
-            $character->setImage('/'.strtolower($character->getKind()).'s/'.strtolower($character->getKind()).'.webp');
+            $character->setImage('/' . strtolower($character->getKind()) . 's/' . strtolower($character->getKind()) . '.webp');
             // Un Building aléatoire sera envoyé
             $character->setBuilding($randomBuildings[array_rand($randomBuildings)]);
             $character->setCreation(new \DateTime());
@@ -46,12 +50,13 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    public function createJsonCharacters(ObjectManager $manager, $jsonBuildings): void
+    public function createJsonCharacters(ObjectManager $manager, $jsonBuildings, $users): void
     {
         $characters = json_decode(file_get_contents('https://la-guilde-des-seigneurs.com/json/characters.json'), true);
         $charactersArray = [];
         foreach ($characters as $characterData) {
             $character = $this->setCharacter($characterData);
+            $character->setUtilisateur($users[array_rand($users)]);
             $manager->persist($character);
             $charactersArray[] = $character;
         }
@@ -73,7 +78,7 @@ class AppFixtures extends Fixture
     {
         $character = new Character();
         foreach ($characterData as $key => $value) {
-            $method = 'set'.ucfirst($key); // Construit le nom de la méthode
+            $method = 'set' . ucfirst($key); // Construit le nom de la méthode
             if (method_exists($character, $method)) { // Si la méthode existe
                 $character->$method($value ?? null); // Appelle la méthode
             }
@@ -87,6 +92,7 @@ class AppFixtures extends Fixture
     }
 
     public function __construct(
+        private UserPasswordHasherInterface $hasher,
         private SluggerInterface $slugger,
     ) {
     }
@@ -106,7 +112,7 @@ class AppFixtures extends Fixture
     {
         $building = new Building();
         foreach ($buildingData as $key => $value) {
-            $method = 'set'.ucfirst($key);
+            $method = 'set' . ucfirst($key);
             if (method_exists($building, $method)) {
                 $building->$method($value ?? null);
             }
@@ -130,11 +136,11 @@ class AppFixtures extends Fixture
         $totalBuildings = 5;
         for ($i = 0; $i < $totalBuildings; ++$i) {
             $building = new Building();
-            $building->setName('Château '.$i);
-            $building->setSlug('chateau-'.$i);
-            $building->setCaste('Guerrier '.$i);
+            $building->setName('Château ' . $i);
+            $building->setSlug('chateau-' . $i);
+            $building->setCaste('Guerrier ' . $i);
             $building->setStrength(rand(0, 2000));
-            $building->setImage('/buildings/chateau-'.strtolower($building->getName()).'.webp');
+            $building->setImage('/buildings/chateau-' . strtolower($building->getName()) . '.webp');
             $building->setIdentifier(hash('sha1', uniqid()));
             $building->setCreation(new \DateTime());
             $building->setModification(new \DateTime());
@@ -145,5 +151,31 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         return $buildings;
+    }
+
+    // Creates Users
+    public function createUsers(ObjectManager $manager): array
+    {
+        $emails = [
+            'contact@example.com',
+            'info@example.com',
+            'email@example.com',
+        ];
+        $users = [];
+        foreach ($emails as $email) {
+            $user = new User();
+            $user->setEmail($email);
+            $user->setPassword($this->hasher->hashPassword($user, 'StrongPassword*'));
+            $user->setCreation(new \DateTime());
+            $user->setModification(new \DateTime());
+            // On définit seulement cet utilisateur comme admin
+            if ('contact@example.com' === $email) {
+                $user->setRoles(['ROLE_ADMIN']);
+            }
+            $manager->persist($user);
+            $users[] = $user;
+        }
+        $manager->flush();
+        return $users;
     }
 }

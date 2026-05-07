@@ -102,6 +102,9 @@ class Character
 
     private array $_links = [];
 
+    #[ORM\ManyToOne(inversedBy: 'characters')]
+    private ?User $utilisateur = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -271,6 +274,18 @@ class Character
     public function setLinks(array $_links): static
     {
         $this->_links = $_links;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?User
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?User $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
