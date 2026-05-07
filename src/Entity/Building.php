@@ -9,7 +9,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: BuildingRepository::class)]
 #[ORM\Table(name: '`building`')]
 class Building
@@ -102,6 +101,7 @@ class Building
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -113,6 +113,7 @@ class Building
     public function setSlug(string $slug): static
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -124,6 +125,7 @@ class Building
     public function setCaste(?string $caste): static
     {
         $this->caste = $caste;
+
         return $this;
     }
 
@@ -135,6 +137,7 @@ class Building
     public function setStrength(?int $strength): static
     {
         $this->strength = $strength;
+
         return $this;
     }
 
@@ -146,6 +149,7 @@ class Building
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
         return $this;
     }
 
@@ -157,6 +161,7 @@ class Building
     public function setPrice(?int $price): static
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -168,6 +173,7 @@ class Building
     public function setStars(?int $stars): static
     {
         $this->stars = $stars;
+
         return $this;
     }
 
@@ -179,6 +185,7 @@ class Building
     public function setIdentifier(string $identifier): static
     {
         $this->identifier = $identifier;
+
         return $this;
     }
 
@@ -190,6 +197,7 @@ class Building
     public function setCreation(\DateTimeInterface $creation): static
     {
         $this->creation = $creation;
+
         return $this;
     }
 
@@ -201,6 +209,7 @@ class Building
     public function setModification(?\DateTimeInterface $modification): static
     {
         $this->modification = $modification;
+
         return $this;
     }
 

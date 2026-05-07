@@ -40,7 +40,7 @@ class BuildingControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/buildings/' . self::$identifier);
+        $this->client->request('GET', '/buildings/'.self::$identifier);
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
         $this->assertIdentifier();
@@ -84,7 +84,7 @@ class BuildingControllerTest extends WebTestCase
         // Tests with whole content
         $this->client->request(
             'PUT',
-            '/buildings/' . self::$identifier,
+            '/buildings/'.self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -100,11 +100,9 @@ class BuildingControllerTest extends WebTestCase
         $this->assertResponseCode(204);
     }
 
-
-
     public function testDelete()
     {
-        $this->client->request('DELETE', '/buildings/' . self::$identifier);
+        $this->client->request('DELETE', '/buildings/'.self::$identifier);
         $this->assertResponseCode(204);
     }
 

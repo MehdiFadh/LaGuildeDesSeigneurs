@@ -11,16 +11,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(name: '`character`')]
 class Character
 {
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, name: 'gls_name')]
     #[Assert\NotNull] // Pour que ce ne soit pas null
     #[Assert\NotBlank] // Pour que ce ne soit pas blanc
-    #[Assert\Length( //Définit une taille mini et maxi
+    #[Assert\Length( // Définit une taille mini et maxi
         min: 3,
         max: 20, // Messages pour customisation, sinon on peut les supprimer
     )]
@@ -50,7 +49,7 @@ class Character
     )]
     private ?string $knowledge = null;
 
-    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true, name: 'gls_intelligence')]
     #[Assert\PositiveOrZero] // OU #[Assert\Positive] si on ne veut pas de 0
     private ?int $intelligence = null;
 
@@ -65,7 +64,7 @@ class Character
     )]
     private ?string $image = null;
 
-    #[ORM\Column]
+    #[ORM\Column(name: 'gls_creation')]
     private ?\DateTime $creation = null;
 
     #[ORM\Column(length: 20)]
@@ -261,6 +260,4 @@ class Character
 
         return $this;
     }
-
-
 }

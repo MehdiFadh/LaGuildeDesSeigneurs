@@ -2,14 +2,14 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\Building;
 use App\Service\BuildingServiceInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
 
 final class BuildingController extends AbstractController
 {
@@ -18,15 +18,17 @@ final class BuildingController extends AbstractController
     {
         $this->denyAccessUnlessGranted('buildingIndex', null);
         $buildings = $this->buildingService->findAll();
+
         return JsonResponse::fromJsonString($this->buildingService->serializeJson($buildings));
     }
 
     #[Route('/buildings/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_building_display', methods: ['GET'])]
     public function display(
         #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
-        Building $building
+        Building $building,
     ): JsonResponse {
         $this->denyAccessUnlessGranted('buildingDisplay', $building);
+
         // On est toujours dans la classe JsonResponse
         // Mais on l'utilise de manière statique
         // d'où l'utilisation des ::
@@ -45,6 +47,7 @@ final class BuildingController extends AbstractController
             ['identifier' => $building->getIdentifier()]
         );
         $response->headers->set('Location', $url);
+
         return $response;
     }
 
@@ -53,6 +56,7 @@ final class BuildingController extends AbstractController
     {
         $this->denyAccessUnlessGranted('buildingUpdate', $building);
         $this->buildingService->update($building, $request->getContent());
+
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
@@ -61,11 +65,12 @@ final class BuildingController extends AbstractController
     {
         $this->denyAccessUnlessGranted('buildingDelete', $building);
         $this->buildingService->delete($building);
+
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     public function __construct(
-        private BuildingServiceInterface $buildingService
+        private BuildingServiceInterface $buildingService,
     ) {
     }
 }

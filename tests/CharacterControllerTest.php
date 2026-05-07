@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CharacterControllerTest extends WebTestCase
 {
-
     private $client;
 
     private $content; // Contenu de la réponse
@@ -48,14 +47,13 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/characters/' . self::$identifier);
+        $this->client->request('GET', '/characters/'.self::$identifier);
 
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
 
         $this->assertIdentifier();
     }
-
 
     public function assertJsonResponse()
     {
@@ -97,7 +95,7 @@ class CharacterControllerTest extends WebTestCase
         // Tests with partial data array
         $this->client->request(
             'PUT',
-            '/characters/' . self::$identifier,
+            '/characters/'.self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -115,12 +113,11 @@ class CharacterControllerTest extends WebTestCase
             JSON
         );
         $this->assertResponseCode(204);
-
     }
 
     public function testDelete()
     {
-        $this->client->request('DELETE', '/characters/' . self::$identifier);
+        $this->client->request('DELETE', '/characters/'.self::$identifier);
         $this->assertResponseCode(204);
     }
 
@@ -141,5 +138,4 @@ class CharacterControllerTest extends WebTestCase
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
     }
-
 }

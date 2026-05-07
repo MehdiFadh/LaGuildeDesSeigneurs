@@ -2,11 +2,10 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Building;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use LogicException;
-use App\Entity\Building;
 
 final class BuildingVoter extends Voter
 {
@@ -29,6 +28,7 @@ final class BuildingVoter extends Voter
         if (null !== $subject) {
             return $subject instanceof Building && in_array($attribute, self::ATTRIBUTES);
         }
+
         return in_array($attribute, self::ATTRIBUTES);
     }
 
@@ -46,7 +46,7 @@ final class BuildingVoter extends Voter
                 return $this->canDelete($token, $subject);
         }
 
-        throw new LogicException('Invalid attribute: ' . $attribute);
+        throw new \LogicException('Invalid attribute: '.$attribute);
     }
 
     private function canDisplay($token, $subject)

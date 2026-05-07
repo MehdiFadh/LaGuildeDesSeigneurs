@@ -2,12 +2,10 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Character;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
-use LogicException;
-use App\Entity\Character;
 
 final class CharacterVoter extends Voter
 {
@@ -34,12 +32,12 @@ final class CharacterVoter extends Voter
         if (null !== $subject) {
             return $subject instanceof Character && in_array($attribute, self::ATTRIBUTES);
         }
+
         return in_array($attribute, self::ATTRIBUTES);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
-
         switch ($attribute) {
             case self::CHARACTER_CREATE:
                 return $this->canCreate($token, $subject);
@@ -50,16 +48,16 @@ final class CharacterVoter extends Voter
                 break;
 
             case self::CHARACTER_DISPLAY:
-                case self::CHARACTER_INDEX:
+            case self::CHARACTER_INDEX:
                 return $this->canDisplay($token, $subject);
                 break;
-            
+
             case self::CHARACTER_DELETE:
                 return $this->canDelete($token, $subject);
                 break;
         }
 
-        throw new LogicException('Invalid attribute: ' . $attribute);
+        throw new \LogicException('Invalid attribute: '.$attribute);
     }
 
     private function canDisplay($token, $subject)
@@ -67,15 +65,18 @@ final class CharacterVoter extends Voter
         return true;
     }
 
-    private function canCreate($token, $subject){
+    private function canCreate($token, $subject)
+    {
         return true;
     }
 
-    private function canUpdate($token, $subject){
+    private function canUpdate($token, $subject)
+    {
         return true;
     }
 
-    private function canDelete($token, $subject){
+    private function canDelete($token, $subject)
+    {
         return true;
     }
 }

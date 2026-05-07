@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Listener;
+
 use App\Event\CharacterEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 
 class CharacterListener implements EventSubscriberInterface
 {
@@ -12,7 +12,7 @@ class CharacterListener implements EventSubscriberInterface
         // Événements que l'on souhaite écouter
         return [
             CharacterEvent::CHARACTER_CREATED => 'characterCreated', // Nom de la méthode appelée
-            CharacterEvent::CHARACTER_UPDATED => 'characterUptaded', // Nom de la méthode appelée
+            CharacterEvent::CHARACTER_UPDATED => 'characterUpdated', // Nom de la méthode appelée
         ];
     }
 
@@ -31,7 +31,6 @@ class CharacterListener implements EventSubscriberInterface
         }
     }
 
-
     public function characterUpdated($event)
     {
         // Réception de l'objet Character avec le getter
@@ -45,5 +44,4 @@ class CharacterListener implements EventSubscriberInterface
             $character->setStrength($character->getStrength() - 5);
         }
     }
-
 }

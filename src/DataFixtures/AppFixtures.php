@@ -2,10 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Building;
+use App\Entity\Character;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Character;
-use App\Entity\Building;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
@@ -14,7 +14,6 @@ class AppFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-
 
         $jsonBuildings = $this->createJsonBuildings($manager);
         $this->createJsonCharacters($manager, $jsonBuildings);
@@ -26,18 +25,18 @@ class AppFixtures extends Fixture
     public function createRandomCharacters(ObjectManager $manager, $randomBuildings): void
     {
         $totalCharacters = 20;
-        for ($i = 0; $i < $totalCharacters; $i++) {
+        for ($i = 0; $i < $totalCharacters; ++$i) {
             $character = new Character();
             $character->setKind(rand(0, 1) ? 'Dame' : 'Seigneur');
-            $character->setName('Anardil' . $i);
-            $character->setSlug('anardil' . $i);
+            $character->setName('Anardil'.$i);
+            $character->setSlug('anardil'.$i);
             $character->setSurname('Amie du soleil');
             $character->setCaste('Magicien');
             $character->setKnowledge('Sciences');
             $character->setIntelligence(mt_rand(100, 200));
             $character->setStrength(mt_rand(100, 200));
             $character->setIdentifier(hash('sha1', uniqid()));
-            $character->setImage('/' . strtolower($character->getKind()) . 's/' . strtolower($character->getKind()) . '.webp');
+            $character->setImage('/'.strtolower($character->getKind()).'s/'.strtolower($character->getKind()).'.webp');
             // Un Building aléatoire sera envoyé
             $character->setBuilding($randomBuildings[array_rand($randomBuildings)]);
             $character->setCreation(new \DateTime());
@@ -67,7 +66,6 @@ class AppFixtures extends Fixture
             $manager->persist($building);
         }
         $manager->flush();
-
     }
 
     // Sets the Character with its data
@@ -75,7 +73,7 @@ class AppFixtures extends Fixture
     {
         $character = new Character();
         foreach ($characterData as $key => $value) {
-            $method = 'set' . ucfirst($key); // Construit le nom de la méthode
+            $method = 'set'.ucfirst($key); // Construit le nom de la méthode
             if (method_exists($character, $method)) { // Si la méthode existe
                 $character->$method($value ?? null); // Appelle la méthode
             }
@@ -84,13 +82,13 @@ class AppFixtures extends Fixture
         $character->setIdentifier(hash('sha1', uniqid()));
         $character->setCreation(new \DateTime());
         $character->setModification(new \DateTime());
+
         return $character;
     }
 
     public function __construct(
         private SluggerInterface $slugger,
     ) {
-
     }
 
     public function createJsonBuildings(ObjectManager $manager): array
@@ -100,6 +98,7 @@ class AppFixtures extends Fixture
             $manager->persist($this->setBuilding($buildingData));
         }
         $manager->flush();
+
         return $buildings;
     }
 
@@ -107,7 +106,7 @@ class AppFixtures extends Fixture
     {
         $building = new Building();
         foreach ($buildingData as $key => $value) {
-            $method = 'set' . ucfirst($key);
+            $method = 'set'.ucfirst($key);
             if (method_exists($building, $method)) {
                 $building->$method($value ?? null);
             }
@@ -129,13 +128,13 @@ class AppFixtures extends Fixture
     {
         $buildings = [];
         $totalBuildings = 5;
-        for ($i = 0; $i < $totalBuildings; $i++) {
+        for ($i = 0; $i < $totalBuildings; ++$i) {
             $building = new Building();
-            $building->setName('Château ' . $i);
-            $building->setSlug('chateau-' . $i);
-            $building->setCaste('Guerrier ' . $i);
+            $building->setName('Château '.$i);
+            $building->setSlug('chateau-'.$i);
+            $building->setCaste('Guerrier '.$i);
             $building->setStrength(rand(0, 2000));
-            $building->setImage('/buildings/chateau-' . strtolower($building->getName()) . '.webp');
+            $building->setImage('/buildings/chateau-'.strtolower($building->getName()).'.webp');
             $building->setIdentifier(hash('sha1', uniqid()));
             $building->setCreation(new \DateTime());
             $building->setModification(new \DateTime());
