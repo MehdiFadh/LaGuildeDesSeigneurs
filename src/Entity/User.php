@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -17,34 +19,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['character', 'building', 'user'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['character', 'building', 'user'])]
     private ?string $email = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Groups(['user'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Ignore] // Nous permet d'être sûr que le hash du mot de passe ne sera pas envoyé
     private ?string $password = null;
 
     /**
      * @var Collection<int, Character>
      */
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'utilisateur')]
+    #[Groups(['user'])]
     private Collection $characters;
 
     #[ORM\Column]
-    private ?\DateTime $creation;
+    #[Groups(['user'])]
+    private ?\DateTime $creation = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTime $modification;
+    #[Groups(['user'])]
+    private ?\DateTime $modification = null;
 
     public function __construct()
     {

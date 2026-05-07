@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Repository\UserRepository;
 
 class CharacterControllerTest extends WebTestCase
 {
@@ -12,14 +13,22 @@ class CharacterControllerTest extends WebTestCase
 
     private static $identifier; // Identifier du Character
 
+    private static $userId;
+
     public function setUp(): void
     {
         $this->client = static::createClient();
+        // Récupération du User
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('contact@example.com');
+        self::$userId = $testUser->getId();
+        $this->client->loginUser($testUser); // C'est la méthode qui permet d'être identifié
     }
 
     // Tests creates
     public function testCreate()
     {
+        $userId = self::$userId; // Heredoc ne reconnaît pas les propriétés de classe
         $this->client->request(
             'POST',
             '/characters/',
@@ -35,7 +44,8 @@ class CharacterControllerTest extends WebTestCase
             "knowledge": "Sciences",
             "intelligence": 180,
             "strength": 180,
-            "image": "/dames/anardil.webp"
+            "image": "/dames/anardil.webp",
+            "user": "{$userId}"
             }
             JSON
         );
@@ -47,7 +57,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/characters/'.self::$identifier);
+        $this->client->request('GET', '/characters/' . self::$identifier);
 
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
@@ -108,7 +118,7 @@ class CharacterControllerTest extends WebTestCase
         // Tests with partial data array
         $this->client->request(
             'PUT',
-            '/characters/'.self::$identifier,
+            '/characters/' . self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -130,7 +140,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDelete()
     {
-        $this->client->request('DELETE', '/characters/'.self::$identifier);
+        $this->client->request('DELETE', '/characters/' . self::$identifier);
         $this->assertResponseCode(204);
     }
 

@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Entity\User;
 
 class CharacterService implements CharacterServiceInterface
 {
@@ -127,6 +128,7 @@ class CharacterService implements CharacterServiceInterface
                 }
                 throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
             },
+            'groups' => ['character'],
         ];
         $this->setLinks($object);
 

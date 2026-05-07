@@ -6,6 +6,8 @@ use App\Repository\CharacterRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Attribute\Groups;
+
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
 #[ORM\Table(name: '`character`')]
@@ -14,6 +16,7 @@ class Character
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['character', 'building'])]
     private ?int $id;
 
     #[ORM\Column(length: 20, name: 'gls_name')]
@@ -23,6 +26,7 @@ class Character
         min: 3,
         max: 20, // Messages pour customisation, sinon on peut les supprimer
     )]
+    #[Groups(['character'])] // Mettre cet attribute sur les autres propriétés
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
@@ -92,6 +96,7 @@ class Character
         min: 40, // si on veut une taille fixe il suffit
         max: 40, // de mettre la même valeur pour min et max
     )]
+    #[Groups(['character', 'building'])]
     private ?string $identifier = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

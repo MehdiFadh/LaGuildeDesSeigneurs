@@ -124,6 +124,7 @@ class BuildingService implements BuildingServiceInterface
                 }
                 throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
             },
+            'groups' => ['building'],
         ];
         $this->setLinks($object);
 

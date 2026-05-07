@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Repository\UserRepository;
 
 class BuildingControllerTest extends WebTestCase
 {
@@ -10,9 +11,16 @@ class BuildingControllerTest extends WebTestCase
     private $content;
     private static $identifier;
 
+    private static $userId;
+
     public function setUp(): void
     {
         $this->client = static::createClient();
+        // Récupération du User
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('contact@example.com');
+        self::$userId = $testUser->getId();
+        $this->client->loginUser($testUser);
     }
 
     public function testCreate(): void
@@ -40,7 +48,7 @@ class BuildingControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/buildings/'.self::$identifier);
+        $this->client->request('GET', '/buildings/' . self::$identifier);
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
         $this->assertIdentifier();
@@ -84,7 +92,7 @@ class BuildingControllerTest extends WebTestCase
         // Tests with whole content
         $this->client->request(
             'PUT',
-            '/buildings/'.self::$identifier,
+            '/buildings/' . self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -102,7 +110,7 @@ class BuildingControllerTest extends WebTestCase
 
     public function testDelete()
     {
-        $this->client->request('DELETE', '/buildings/'.self::$identifier);
+        $this->client->request('DELETE', '/buildings/' . self::$identifier);
         $this->assertResponseCode(204);
     }
 
