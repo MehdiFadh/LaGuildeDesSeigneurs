@@ -1,5 +1,8 @@
 <?php
 
+// src/Repository/CharacterRepository.php
+// Dépôt Doctrine (Repository) contenant les requêtes personnalisées pour l'entité Character (notamment pour récupérer un personnage lié à son bâtiment de manière optimisée via son identifiant unique).
+
 namespace App\Repository;
 
 use App\Entity\Character;

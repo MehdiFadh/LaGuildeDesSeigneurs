@@ -4,8 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Building;
 use App\Entity\Character;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
@@ -14,9 +16,9 @@ class AppFixtures extends Fixture
     {
         // $product = new Product();
         // $manager->persist($product);
-
+        $users = $this->createUsers($manager);
         $jsonBuildings = $this->createJsonBuildings($manager);
-        $this->createJsonCharacters($manager, $jsonBuildings);
+        $this->createJsonCharacters($manager, $jsonBuildings, $users);
         // Les Buildings DOIVENT être faits en premier pour pouvoir être liés aux Characters
         $randomBuildings = $this->createRandomBuildings($manager);
         $this->createRandomCharacters($manager, $randomBuildings);
@@ -46,12 +48,13 @@ class AppFixtures extends Fixture
         $manager->flush();
     }
 
-    public function createJsonCharacters(ObjectManager $manager, $jsonBuildings): void
+    public function createJsonCharacters(ObjectManager $manager, $jsonBuildings, $users): void
     {
         $characters = json_decode(file_get_contents('https://la-guilde-des-seigneurs.com/json/characters.json'), true);
         $charactersArray = [];
         foreach ($characters as $characterData) {
             $character = $this->setCharacter($characterData);
+            $character->setUtilisateur($users[array_rand($users)]);
             $manager->persist($character);
             $charactersArray[] = $character;
         }
@@ -87,6 +90,7 @@ class AppFixtures extends Fixture
     }
 
     public function __construct(
+        private UserPasswordHasherInterface $hasher,
         private SluggerInterface $slugger,
     ) {
     }
@@ -145,5 +149,32 @@ class AppFixtures extends Fixture
         $manager->flush();
 
         return $buildings;
+    }
+
+    // Creates Users
+    public function createUsers(ObjectManager $manager): array
+    {
+        $emails = [
+            'contact@example.com',
+            'info@example.com',
+            'email@example.com',
+        ];
+        $users = [];
+        foreach ($emails as $email) {
+            $user = new User();
+            $user->setEmail($email);
+            $user->setPassword($this->hasher->hashPassword($user, 'StrongPassword*'));
+            $user->setCreation(new \DateTime());
+            $user->setModification(new \DateTime());
+            // On définit seulement cet utilisateur comme admin
+            if ('contact@example.com' === $email) {
+                $user->setRoles(['ROLE_ADMIN']);
+            }
+            $manager->persist($user);
+            $users[] = $user;
+        }
+        $manager->flush();
+
+        return $users;
     }
 }

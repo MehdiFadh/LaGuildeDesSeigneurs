@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{# Titre de l'onglet du navigateur #}
+{% block title %}Liste des Personnages
+{% endblock %}
+
+{% block body %}
+	<div
+		class="container my-5">
+		{# Titre principal de la page #}
+		<h1 class="text-center mb-4 text-primary">Liste des Personnages</h1>
+
+		{# Tableau affichant la liste des personnages #}
+		<div class="table-responsive shadow-sm rounded">
+			<table
+				class="table table-hover table-striped text-center align-middle border mb-0">
+				{# En-tête du tableau #}
+				<thead class="table-dark">
+					<tr>
+						<th>Genre</th>
+						<th>Nom</th>
+						<th>Slug</th>
+						<th>Surnom</th>
+						<th>Caste</th>
+						<th>Connaissances</th>
+						<th>Intelligence</th>
+						<th>Force</th>
+						<th>Date de création</th>
+						<th>Date de modification</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				{# Corps du tableau #}
+				<tbody>
+					{% for character in characters %}
+						<tr>
+							{# Colonne Genre (Kind) - Mis en gras si c'est "Dame" #}
+							<td>
+								{% if character.kind == 'Dame' %}
+									<strong>{{ character.kind }}</strong>
+								{% else %}
+									{{ character.kind }}
+								{% endif %}
+							</td>
+
+							{# Colonne Nom (Name) - Lien cliquable pour voir le personnage #}
+							<td>
+								<a href="{{ path('api_character_show', {'identifier': character.identifier}) }}" class="link-primary text-decoration-none fw-bold">
+									{{ character.name }}
+								</a>
+							</td>
+
+							{# Colonne Slug #}
+							<td>{{ character.slug }}</td>
+
+							{# Colonne Surnom (Surname) #}
+							<td>{{ character.surname }}</td>
+
+							{# Colonne Caste #}
+							<td>{{ character.caste }}</td>
+
+							{# Colonne Connaissances (Knowledge) #}
+							<td>{{ character.knowledge }}</td>
+
+							{# Colonne Intelligence #}
+							<td>{{ character.intelligence }}</td>
+
+							{# Colonne Force (Strength) #}
+							<td>{{ character.strength }}</td>
+
+							{# Colonne Date de création - Formatée en Jour/Mois/Année #}
+							<td>{{ character.creation ? character.creation|date('d/m/Y') : '' }}</td>
+
+							{# Colonne Date de modification - Formatée en Jour/Mois/Année #}
+							<td>{{ character.modification ? character.modification|date('d/m/Y') : '' }}</td>
+
+							{# Colonne Actions - Modifier uniquement #}
+							<td>
+								<a href="{{ path('api_character_edit', {'identifier': character.identifier}) }}">Modifier</a>
+							</td>
+						</tr>
+					{% else %}
+						{# Cas où aucun personnage n'est présent dans la base de données #}
+						<tr>
+							<td colspan="11" class="text-muted py-4">Aucun personnage trouvé.</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		{# Bouton de création centré #}
+		<div class="text-center my-4">
+			<a href="{{ path('api_character_new') }}" class="btn btn-success btn-lg shadow-sm">
+				Nouveau Character
+			</a>
+		</div>
+	</div>
+{% endblock %}

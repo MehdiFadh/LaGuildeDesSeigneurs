@@ -1,5 +1,8 @@
 <?php
 
+// src/Event/CharacterEvent.php
+// Événement Symfony personnalisé déclenché lors des actions sur les personnages (création avant/après persistance, et mise à jour) pour notifier les écouteurs.
+
 namespace App\Event;
 
 use App\Entity\Character;

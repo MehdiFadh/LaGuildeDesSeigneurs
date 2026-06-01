@@ -8,7 +8,15 @@ nelmio_api_doc:
         info:
             title: La Guilde des Seigneurs
             description: API utilisée pour La Guilde des Seigneurs
-            version: "0.14"
+            version: "1.0"
+        components:
+            securitySchemes:
+                Bearer:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+        security:
+            - Bearer: []
     areas: # to filter documented areas
         path_patterns:
             - ^/((?!api|_error).*$)

@@ -1,5 +1,8 @@
 <?php
 
+// src/Controller/CharacterController.php
+// Contrôleur de l'API gérant les requêtes HTTP pour les personnages (GET, POST, PUT, DELETE, images) et documenté via NelmioApiDoc.
+
 namespace App\Controller;
 
 use App\Entity\Character;
@@ -10,6 +13,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class CharacterController extends AbstractController
@@ -28,11 +32,27 @@ final class CharacterController extends AbstractController
         description: 'Access denied'
     )]
     #[OA\Tag(name: 'Character')]
-    public function index(): JsonResponse
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'Number of the page',
+        schema: new OA\Schema(type: 'integer', default: 1),
+        required: true
+    )]
+    #[OA\Parameter(
+        name: 'size',
+        in: 'query',
+        description: 'Number of records',
+        schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
+        required: true
+    )]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
+    public function index(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('characterIndex', null);
+        $characters = $this->characterService->findAllPaginated($request->query);
 
-        return JsonResponse::fromJsonString($this->characterService->serializeJson($this->characterService->findAll()));
+        return JsonResponse::fromJsonString($this->characterService->serializeJson($characters));
     }
 
     #[Route('/characters/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
@@ -58,6 +78,7 @@ final class CharacterController extends AbstractController
         description: 'Not found'
     )]
     #[OA\Tag(name: 'Character')]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function display(
         #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
         Character $character,
@@ -187,6 +208,78 @@ final class CharacterController extends AbstractController
         $this->characterService->delete($character);
 
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+    }
+
+    // IMAGES
+    #[Route(
+        '/characters/images/{number}',
+        name: 'app_character_images',
+        requirements: ['number' => '^([0-9]{1,2})$'],
+        methods: ['GET']
+    )]
+    #[OA\Parameter(
+        name: 'number',
+        in: 'path',
+        description: 'Number of images',
+        schema: new OA\Schema(type: 'integer'),
+        required: false
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns links for images'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
+    #[OA\Tag(name: 'Character')]
+    public function images(int $number = 1): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('characterIndex', null);
+        $images = $this->characterService->getImages($number);
+
+        return new JsonResponse($images);
+    }
+
+    #[Route(
+        '/characters/images/{kind}/{number}',
+        name: 'app_character_images_kind',
+        requirements: [
+            'number' => '^([0-9]{1,2})$',
+            'kind' => '^(dames|seigneurs|tourmenteurs|tourmenteuses)$',
+        ],
+        methods: ['GET']
+    )]
+    #[OA\Parameter(
+        name: 'number',
+        in: 'path',
+        description: 'Number of images',
+        schema: new OA\Schema(type: 'integer'),
+        required: false
+    )]
+    #[OA\Parameter(
+        name: 'kind',
+        in: 'path',
+        description: 'Kind of Character',
+        example: 'dames|seigneurs|tourmenteurs|tourmenteuses',
+        schema: new OA\Schema(type: 'string'),
+        required: false
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns links for images'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
+    #[OA\Tag(name: 'Character')]
+    public function imagesKind(string $kind, int $number = 1): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('characterIndex', null);
+        $images = $this->characterService->getImagesKind($kind, $number);
+
+        return new JsonResponse($images);
     }
 
     public function __construct(

@@ -1,5 +1,8 @@
 <?php
 
+// src/Controller/BuildingController.php
+// Contrôleur de l'API gérant les requêtes HTTP pour les bâtiments (GET, POST, PUT, DELETE) et retournant des réponses JSON.
+
 namespace App\Controller;
 
 use App\Entity\Building;
@@ -9,20 +12,37 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class BuildingController extends AbstractController
 {
     #[Route('/buildings/', name: 'app_building_index', methods: ['GET'])]
-    public function index(): JsonResponse
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'Number of the page',
+        schema: new OA\Schema(type: 'integer', default: 1),
+        required: true
+    )]
+    #[OA\Parameter(
+        name: 'size',
+        in: 'query',
+        description: 'Number of records',
+        schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
+        required: true
+    )]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
+    public function index(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('buildingIndex', null);
-        $buildings = $this->buildingService->findAll();
+        $buildings = $this->buildingService->findAllPaginated($request->query);
 
         return JsonResponse::fromJsonString($this->buildingService->serializeJson($buildings));
     }
 
     #[Route('/buildings/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_building_display', methods: ['GET'])]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
     public function display(
         #[MapEntity(expr: 'repository.findOneByIdentifier(identifier)')]
         Building $building,
@@ -67,6 +87,36 @@ final class BuildingController extends AbstractController
         $this->buildingService->delete($building);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route(
+        '/buildings/images/{number}',
+        name: 'app_building_images',
+        requirements: ['number' => '^([0-9]{1,2})$'],
+        methods: ['GET']
+    )]
+    #[OA\Parameter(
+        name: 'number',
+        in: 'path',
+        description: 'Number of images',
+        schema: new OA\Schema(type: 'integer'),
+        required: false
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns links for images'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
+    #[OA\Tag(name: 'Building')]
+    public function images(int $number = 1): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('buildingIndex', null);
+        $images = $this->buildingService->getImages($number);
+
+        return new JsonResponse($images);
     }
 
     public function __construct(

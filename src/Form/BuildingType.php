@@ -1,5 +1,8 @@
 <?php
 
+// src/Form/BuildingType.php
+// Formulaire Symfony (FormType) utilisé pour l'hydratation, la validation et le traitement des données envoyées (payload) pour les bâtiments.
+
 namespace App\Form;
 
 use App\Entity\Building;

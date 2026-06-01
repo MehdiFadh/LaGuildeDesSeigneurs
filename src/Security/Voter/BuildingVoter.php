@@ -1,5 +1,8 @@
 <?php
 
+// src/Security/Voter/BuildingVoter.php
+// Voter de sécurité chargé d'autoriser ou de refuser les opérations CRUD sur les bâtiments selon les droits de l'utilisateur connecté.
+
 namespace App\Security\Voter;
 
 use App\Entity\Building;

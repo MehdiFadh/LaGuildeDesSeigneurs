@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CharacterControllerTest extends WebTestCase
@@ -12,14 +13,22 @@ class CharacterControllerTest extends WebTestCase
 
     private static $identifier; // Identifier du Character
 
+    private static $userId;
+
     public function setUp(): void
     {
         $this->client = static::createClient();
+        // Récupération du User
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('contact@example.com');
+        self::$userId = $testUser->getId();
+        $this->client->loginUser($testUser); // C'est la méthode qui permet d'être identifié
     }
 
     // Tests creates
     public function testCreate()
     {
+        $userId = self::$userId; // Heredoc ne reconnaît pas les propriétés de classe
         $this->client->request(
             'POST',
             '/characters/',
@@ -35,7 +44,8 @@ class CharacterControllerTest extends WebTestCase
             "knowledge": "Sciences",
             "intelligence": 180,
             "strength": 180,
-            "image": "/dames/anardil.webp"
+            "image": "/dames/anardil.webp",
+            "utilisateur": "{$userId}"
             }
             JSON
         );
@@ -66,7 +76,20 @@ class CharacterControllerTest extends WebTestCase
     // Tests index
     public function testIndex()
     {
+        // Tests with default values
         $this->client->request('GET', '/characters/');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with page
+        $this->client->request('GET', '/characters/?page=1');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with page and size
+        $this->client->request('GET', '/characters/?page=1&size=1');
+        $this->assertResponseCode(200);
+        $this->assertJsonResponse();
+        // Tests with size
+        $this->client->request('GET', '/characters/?size=1');
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
     }
@@ -137,5 +160,25 @@ class CharacterControllerTest extends WebTestCase
     {
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
+    }
+
+    // Tests images
+    public function testImages()
+    {
+        $this->client->request('GET', '/characters/images');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/3');
+        $this->assertJsonResponse();
+        // Tests with kind
+        $this->client->request('GET', '/characters/images/dames');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/dames/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/seigneurs/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/tourmenteurs/3');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/characters/images/tourmenteuses/3');
+        $this->assertJsonResponse();
     }
 }

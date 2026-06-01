@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/BuildingServiceInterface.php
+// Interface définissant le contrat du service de gestion des bâtiments (CRUD, validation, sérialisation, pagination, HATEOAS).
+
 namespace App\Service;
 
 use App\Entity\Building;
@@ -20,4 +23,16 @@ interface BuildingServiceInterface
 
     // Serializes the object(s)
     public function serializeJson($object);
+
+    // Finds all the buildings paginated
+    public function findAllPaginated($query);
+
+    // Defines the links for HATEOAS
+    public function setLinks($object);
+
+    // Gets random images
+    public function getImages(int $number);
+
+    // Finds one building by its name
+    public function findOneByName(string $name): ?Building;
 }

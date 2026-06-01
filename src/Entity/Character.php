@@ -1,10 +1,14 @@
 <?php
 
+// src/Entity/Character.php
+// Entité Doctrine représentant un personnage du jeu, avec ses attributs physiques et mentaux (intelligence, force, classe/caste), et ses liaisons à un bâtiment et à un utilisateur.
+
 namespace App\Entity;
 
 use App\Repository\CharacterRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
@@ -14,6 +18,7 @@ class Character
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['character', 'building'])]
     private ?int $id;
 
     #[ORM\Column(length: 20, name: 'gls_name')]
@@ -23,6 +28,7 @@ class Character
         min: 3,
         max: 20, // Messages pour customisation, sinon on peut les supprimer
     )]
+    #[Groups(['character'])] // Mettre cet attribute sur les autres propriétés
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
@@ -32,6 +38,7 @@ class Character
         min: 3,
         max: 50, // 50 caractères
     )]
+    #[Groups(['character'])]
     private ?string $surname;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -40,6 +47,7 @@ class Character
         min: 3,
         max: 20,
     )]
+    #[Groups(['character'])]
     private ?string $caste = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -47,14 +55,17 @@ class Character
         min: 3,
         max: 20,
     )]
+    #[Groups(['character'])]
     private ?string $knowledge = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true, name: 'gls_intelligence')]
     #[Assert\PositiveOrZero] // OU #[Assert\Positive] si on ne veut pas de 0
+    #[Groups(['character'])]
     private ?int $intelligence = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     #[Assert\PositiveOrZero]
+    #[Groups(['character'])]
     private ?int $strength = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -62,9 +73,11 @@ class Character
         min: 5,
         max: 50,
     )]
+    #[Groups(['character'])]
     private ?string $image = null;
 
     #[ORM\Column(name: 'gls_creation')]
+    #[Groups(['character'])]
     private ?\DateTime $creation = null;
 
     #[ORM\Column(length: 20)]
@@ -74,6 +87,7 @@ class Character
         min: 3,
         max: 20,
     )]
+    #[Groups(['character'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 20)]
@@ -83,6 +97,7 @@ class Character
         min: 3,
         max: 20,
     )]
+    #[Groups(['character'])]
     private ?string $kind = null;
 
     #[ORM\Column(length: 40)]
@@ -92,13 +107,23 @@ class Character
         min: 40, // si on veut une taille fixe il suffit
         max: 40, // de mettre la même valeur pour min et max
     )]
+    #[Groups(['character', 'building'])]
     private ?string $identifier = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['character'])]
     private ?\DateTimeInterface $modification = null;
 
     #[ORM\ManyToOne(inversedBy: 'characters')]
+    #[Groups(['character'])]
     private ?Building $building = null;
+
+    #[Groups(['character'])]
+    private array $_links = [];
+
+    #[ORM\ManyToOne(inversedBy: 'characters')]
+    #[Groups(['character'])]
+    private ?User $utilisateur = null;
 
     public function getId(): ?int
     {
@@ -257,6 +282,30 @@ class Character
     public function setBuilding(?Building $building): static
     {
         $this->building = $building;
+
+        return $this;
+    }
+
+    public function getLinks(): array
+    {
+        return $this->_links;
+    }
+
+    public function setLinks(array $_links): static
+    {
+        $this->_links = $_links;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?User
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?User $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }

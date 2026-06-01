@@ -1,0 +1,95 @@
+{% extends 'base.html.twig' %}
+
+{# Titre de l'onglet du navigateur #}
+{% block title %}Détails du Character{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="row">
+            {# Colonne centrale de largeur 6 avec offset de 3 #}
+            <div class="col-6 offset-3 shadow-sm p-4 rounded bg-light border">
+                {# Titre de la section de présentation #}
+                <h1 class="mb-4 text-center text-primary">Détails du Character</h1>
+
+                {# Détails du personnage sous forme de table responsive #}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th>Id</th>
+                                <td>{{ character.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Identifier</th>
+                                <td class="text-break">{{ character.identifier }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nom</th>
+                                <td>{{ character.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Slug</th>
+                                <td>{{ character.slug }}</td>
+                            </tr>
+                            <tr>
+                                <th>Genre (Kind)</th>
+                                <td>
+                                    {% if character.kind == 'Dame' %}
+                                        <strong>{{ character.kind }}</strong>
+                                    {% else %}
+                                        {{ character.kind }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Surnom</th>
+                                <td>{{ character.surname }}</td>
+                            </tr>
+                            <tr>
+                                <th>Caste</th>
+                                <td>{{ character.caste }}</td>
+                            </tr>
+                            <tr>
+                                <th>Connaissances</th>
+                                <td>{{ character.knowledge }}</td>
+                            </tr>
+                            <tr>
+                                <th>Intelligence</th>
+                                <td>{{ character.intelligence }}</td>
+                            </tr>
+                            <tr>
+                                <th>Force</th>
+                                <td>{{ character.strength }}</td>
+                            </tr>
+                            <tr>
+                                <th>Image</th>
+                                <td>{{ character.image }}</td>
+                            </tr>
+                            <tr>
+                                <th>Création</th>
+                                <td>{{ character.creation ? character.creation|date('d/m/Y H:i:s') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Modification</th>
+                                <td>{{ character.modification ? character.modification|date('d/m/Y H:i:s') : '' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Section d'actions complémentaires #}
+                <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-3">
+                    <a href="{{ path('api_character_index') }}" class="btn btn-secondary shadow-sm">
+                        Retour
+                    </a>
+                    
+                    <a href="{{ path('api_character_edit', {'identifier': character.identifier}) }}" class="btn btn-warning shadow-sm">
+                        Modifier
+                    </a>
+
+                    {{ include('api-character/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

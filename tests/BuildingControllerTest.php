@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class BuildingControllerTest extends WebTestCase
@@ -10,9 +11,16 @@ class BuildingControllerTest extends WebTestCase
     private $content;
     private static $identifier;
 
+    private static $userId;
+
     public function setUp(): void
     {
         $this->client = static::createClient();
+        // Récupération du User
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('contact@example.com');
+        self::$userId = $testUser->getId();
+        $this->client->loginUser($testUser);
     }
 
     public function testCreate(): void
@@ -121,5 +129,13 @@ class BuildingControllerTest extends WebTestCase
     {
         $response = $this->client->getResponse();
         $this->assertEquals($code, $response->getStatusCode());
+    }
+
+    public function testImages()
+    {
+        $this->client->request('GET', '/buildings/images');
+        $this->assertJsonResponse();
+        $this->client->request('GET', '/buildings/images/3');
+        $this->assertJsonResponse();
     }
 }

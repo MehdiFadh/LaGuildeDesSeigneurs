@@ -1,5 +1,8 @@
 <?php
 
+// src/Listener/CharacterListener.php
+// Écouteur d'événements (EventSubscriber) qui intercepte la création et la mise à jour des personnages pour appliquer des ajustements dynamiques sur leurs statistiques (intelligence, force selon leur type).
+
 namespace App\Listener;
 
 use App\Event\CharacterEvent;

@@ -1,9 +1,13 @@
 <?php
 
+// src/Security/Voter/CharacterVoter.php
+// Voter de sécurité chargé de vérifier les autorisations de lecture, création, modification et suppression des personnages (seul le propriétaire du personnage ou un administrateur peut modifier/supprimer).
+
 namespace App\Security\Voter;
 
 use App\Entity\Character;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -72,11 +76,16 @@ final class CharacterVoter extends Voter
 
     private function canUpdate($token, $subject)
     {
-        return true;
+        return $this->accessDecisionManager->decide($token, ['ROLE_ADMIN']) || $subject->getUser() === $token->getUser();
     }
 
     private function canDelete($token, $subject)
     {
-        return true;
+        return $this->accessDecisionManager->decide($token, ['ROLE_ADMIN']) || $subject->getUser() === $token->getUser();
+    }
+
+    public function __construct(
+        private AccessDecisionManagerInterface $accessDecisionManager,
+    ) {
     }
 }

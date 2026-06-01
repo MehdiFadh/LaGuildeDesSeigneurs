@@ -1,6 +1,7 @@
 <?php
 
 // src/Event/BuildingEvent.php
+// Événement Symfony personnalisé déclenché lors des actions sur les bâtiments (création avant/après base de données, et mise à jour) pour notifier les écouteurs.
 
 namespace App\Event;
 

@@ -1,0 +1,59 @@
+PHPUnit 13.1.8 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.5
+Configuration: /app/phpunit.dist.xml
+
+.
+Expected 200 but got 500
+Response Content: 
+Error {#2139
+  #message: "Call to a member function getIdentifier() on array"
+  #code: 0
+  #file: "/app/src/Service/CharacterService.php"
+  #line: 157
+  trace: {
+    /app/src/Service/CharacterService.php:157 {
+      App\Service\CharacterService->setLinks($object)
+      › $links = [
+      ›     'self' => ['href' => '/characters/'.$object->getIdentifier()],
+      ›     'update' => ['href' => '/characters/'.$object->getIdentifier()],
+    }
+    /app/src/Service/CharacterService.php:130 { …}
+    /app/src/Controller/CharacterController.php:52 { …}
+    /app/vendor/symfony/http-kernel/HttpKernel.php:183 { …}
+    /app/vendor/symfony/http-kernel/HttpKernel.php:76 { …}
+    /app/vendor/symfony/http-kernel/Kernel.php:191 { …}
+    /app/vendor/symfony/http-kernel/HttpKernelBrowser.php:62 { …}
+    /app/vendor/symfony/framework-bundle/KernelBrowser.php:180 { …}
+    /app/vendor/symfony/browser-kit/AbstractBrowser.php:378 { …}
+    /app/tests/CharacterControllerTest.php:70 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestCase.php:1315 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestCase.php:1349 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestCase.php:519 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestRunner/TestRunner.php:99 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestCase.php:360 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php:375 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php:375 { …}
+    /app/vendor/phpunit/phpunit/src/Framework/TestSuite.php:375 { …}
+    /app/vendor/phpunit/phpunit/src/TextUI/TestRunner.php:64 { …}
+    /app/vendor/phpunit/phpunit/src/TextUI/Application.php:234 { …}
+    /app/vendor/phpunit/phpunit/phpunit:104 { …}
+    /app/bin/phpunit:4 { …}
+  }
+}
+
+[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.266, Memory: 40.50 MB
+
+There was 1 failure:
+
+1) App\Tests\CharacterControllerTest::testIndex
+Failed asserting that 500 matches expected 200.
+
+/app/tests/CharacterControllerTest.php:156
+/app/tests/CharacterControllerTest.php:71
+/app/vendor/phpunit/phpunit/phpunit:104
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 4[0m[37;41m, Failures: 1[0m[37;41m.[0m
