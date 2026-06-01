@@ -1,5 +1,8 @@
 <?php
 
+// src/Repository/UserRepository.php
+// Dépôt Doctrine (Repository) contenant les requêtes de base de données pour l'entité User, implémentant PasswordUpgraderInterface pour la mise à niveau automatique des mots de passe hachés.
+
 namespace App\Repository;
 
 use App\Entity\User;

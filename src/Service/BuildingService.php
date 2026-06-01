@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/BuildingService.php
+// Service gérant la logique métier des bâtiments, incluant la création (avec événements), la validation (via formulaires et validator), la suppression, la sérialisation personnalisée avec liens HATEOAS, et la gestion des images.
+
 namespace App\Service;
 
 use App\Entity\Building;
@@ -66,7 +69,7 @@ class BuildingService implements BuildingServiceInterface
         $dataArray = is_array($data) ? $data : json_decode($data, true);
         // Bad array
         if (null !== $data && !is_array($dataArray)) {
-            throw new UnprocessableEntityHttpException('Submitted data is not an array -> '.$data);
+            throw new UnprocessableEntityHttpException('Submitted data is not an array -> ' . $data);
         }
         // Submits form
         $form = $this->formFactory->create($formName, $building, ['csrf_protection' => false]);
@@ -74,9 +77,9 @@ class BuildingService implements BuildingServiceInterface
         // Gets errors
         $errors = $form->getErrors();
         foreach ($errors as $error) {
-            $errorMsg = 'Error '.get_class($error->getCause());
-            $errorMsg .= ' --> '.$error->getMessageTemplate();
-            $errorMsg .= ' '.json_encode($error->getMessageParameters());
+            $errorMsg = 'Error ' . get_class($error->getCause());
+            $errorMsg .= ' --> ' . $error->getMessageTemplate();
+            $errorMsg .= ' ' . json_encode($error->getMessageParameters());
             throw new \LogicException($errorMsg);
         }
     }
@@ -107,9 +110,9 @@ class BuildingService implements BuildingServiceInterface
         // Vérification du bon fonctionnement en introduisant une erreur
         $errors = $this->validator->validate($building);
         if (count($errors) > 0) {
-            $errorMsg = (string) $errors.'Wrong data for Entity -> ';
+            $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
             $errorMsg .= json_encode($this->serializeJson($building));
-            $errorMsg = 'Missing data for Entity -> '.json_encode($building->toArray());
+            $errorMsg = 'Missing data for Entity -> ' . json_encode($building->toArray());
             throw new UnprocessableEntityHttpException($errorMsg);
         }
     }
@@ -122,7 +125,7 @@ class BuildingService implements BuildingServiceInterface
                 if ($object instanceof Building || $object instanceof Character) {
                     return $object->getIdentifier();
                 }
-                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "'.get_debug_type($object).'".');
+                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
             },
             'groups' => ['building'],
         ];
@@ -152,9 +155,9 @@ class BuildingService implements BuildingServiceInterface
             return;
         }
         $links = [
-            'self' => ['href' => '/buildings/'.$object->getIdentifier()],
-            'update' => ['href' => '/buildings/'.$object->getIdentifier()],
-            'delete' => ['href' => '/buildings/'.$object->getIdentifier()],
+            'self' => ['href' => '/buildings/' . $object->getIdentifier()],
+            'update' => ['href' => '/buildings/' . $object->getIdentifier()],
+            'delete' => ['href' => '/buildings/' . $object->getIdentifier()],
         ];
         $object->setLinks($links);
     }
@@ -162,7 +165,7 @@ class BuildingService implements BuildingServiceInterface
     // Gets random images
     public function getImages(int $number): array
     {
-        $folder = __DIR__.'/../../public/images/buildings/';
+        $folder = __DIR__ . '/../../public/images/buildings/';
         $finder = new Finder();
         $finder
             ->files() // On veut des fichiers
@@ -171,10 +174,17 @@ class BuildingService implements BuildingServiceInterface
         $images = [];
         foreach ($finder as $file) {
             // dump($file); // Si vous voulez voir le contenu de file
-            $images[] = str_replace(__DIR__.'/../../public', '', $file->getPathname());
+            $images[] = str_replace(__DIR__ . '/../../public', '', $file->getPathname());
         }
         shuffle($images);
 
         return array_slice($images, 0, $number, true);
     }
+
+    // Finds one building by its name
+    public function findOneByName(string $name): ?Building
+    {
+        return $this->buildingRepository->findOneByName($name);
+    }
 }
+

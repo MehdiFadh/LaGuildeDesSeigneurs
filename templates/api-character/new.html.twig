@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{# Titre de l'onglet du navigateur #}
+{% block title %}Nouveau Character{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="row">
+            {# Colonne centrale de largeur 6 avec offset de 3 #}
+            <div class="col-6 offset-3 shadow-sm p-4 rounded bg-light border">
+                {# Titre du formulaire #}
+                <h1 class="mb-4 text-center text-primary">Créer un Nouveau Character</h1>
+
+                {# Formulaire de création #}
+                {{ include('api-character/_form.html.twig') }}
+
+                {# Bouton de retour #}
+                <div class="mt-4 text-center border-top pt-3">
+                    <a href="{{ path('api_character_index') }}" class="btn btn-secondary shadow-sm">
+                        Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

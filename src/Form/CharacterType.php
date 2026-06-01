@@ -1,5 +1,8 @@
 <?php
 
+// src/Form/CharacterType.php
+// Formulaire Symfony (FormType) utilisé pour l'hydratation, la validation et le traitement des données envoyées (payload) pour les personnages.
+
 namespace App\Form;
 
 use App\Entity\Character;

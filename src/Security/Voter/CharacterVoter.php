@@ -1,5 +1,8 @@
 <?php
 
+// src/Security/Voter/CharacterVoter.php
+// Voter de sécurité chargé de vérifier les autorisations de lecture, création, modification et suppression des personnages (seul le propriétaire du personnage ou un administrateur peut modifier/supprimer).
+
 namespace App\Security\Voter;
 
 use App\Entity\Character;

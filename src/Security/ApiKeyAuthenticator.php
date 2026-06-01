@@ -1,5 +1,8 @@
 <?php
 
+// src/Security/ApiKeyAuthenticator.php
+// Authentificateur personnalisé de sécurité Symfony chargé d'intercepter les requêtes HTTP avec en-tête d'autorisation "Bearer", de valider le jeton et de charger l'utilisateur correspondant.
+
 namespace App\Security;
 
 use App\Service\UserServiceInterface;

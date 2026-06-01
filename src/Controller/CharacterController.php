@@ -1,5 +1,8 @@
 <?php
 
+// src/Controller/CharacterController.php
+// Contrôleur de l'API gérant les requêtes HTTP pour les personnages (GET, POST, PUT, DELETE, images) et documenté via NelmioApiDoc.
+
 namespace App\Controller;
 
 use App\Entity\Character;

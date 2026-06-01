@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/BuildingServiceInterface.php
+// Interface définissant le contrat du service de gestion des bâtiments (CRUD, validation, sérialisation, pagination, HATEOAS).
+
 namespace App\Service;
 
 use App\Entity\Building;
@@ -29,4 +32,7 @@ interface BuildingServiceInterface
 
     // Gets random images
     public function getImages(int $number);
+
+    // Finds one building by its name
+    public function findOneByName(string $name): ?Building;
 }

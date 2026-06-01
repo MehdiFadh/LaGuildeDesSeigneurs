@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/UserService.php
+// Service gérant les utilisateurs, spécifiquement l'authentification par l'émission de jetons JWT sécurisés et signés (via Lcobucci/JWT) ainsi que le décodage et la validation des jetons reçus.
+
 namespace App\Service;
 
 use App\Entity\User;
@@ -68,4 +71,6 @@ class UserService implements UserServiceInterface
         private UserRepository $userRepository,
     ) {
     }
+
+
 }

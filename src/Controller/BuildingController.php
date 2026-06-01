@@ -1,5 +1,8 @@
 <?php
 
+// src/Controller/BuildingController.php
+// Contrôleur de l'API gérant les requêtes HTTP pour les bâtiments (GET, POST, PUT, DELETE) et retournant des réponses JSON.
+
 namespace App\Controller;
 
 use App\Entity\Building;

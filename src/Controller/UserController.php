@@ -1,5 +1,8 @@
 <?php
 
+// src/Controller/UserController.php
+// Contrôleur de l'API gérant la connexion des utilisateurs (signin) et la génération du jeton d'authentification (JWT).
+
 namespace App\Controller;
 
 use App\Service\UserServiceInterface;

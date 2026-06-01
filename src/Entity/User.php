@@ -1,5 +1,8 @@
 <?php
 
+// src/Entity/User.php
+// Entité Doctrine représentant un utilisateur (seigneur) du jeu, gérant ses identifiants de connexion, ses rôles de sécurité et ses personnages créés.
+
 namespace App\Entity;
 
 use App\Repository\UserRepository;

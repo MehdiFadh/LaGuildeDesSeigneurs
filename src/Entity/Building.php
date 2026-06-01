@@ -1,5 +1,8 @@
 <?php
 
+// src/Entity/Building.php
+// Entité Doctrine représentant un bâtiment dans le jeu, avec ses statistiques (force, prix, étoiles), sa caste associée et les relations avec les personnages.
+
 namespace App\Entity;
 
 use App\Repository\BuildingRepository;
@@ -37,6 +40,7 @@ class Building
         min: 3,
         max: 20,
     )]
+    #[Groups(['building'])]
     private ?string $slug = null;
 
     #[ORM\Column(length: 20, nullable: true)]
@@ -46,10 +50,12 @@ class Building
         min: 3,
         max: 20,
     )]
+    #[Groups(['building'])]
     private ?string $caste = null;
 
     #[ORM\Column(nullable: true)]
     #[Assert\PositiveOrZero]
+    #[Groups(['building'])]
     private ?int $strength = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -57,12 +63,15 @@ class Building
         min: 5,
         max: 50,
     )]
+    #[Groups(['building'])]
     private ?string $image = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['building'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    #[Groups(['building'])]
     private ?int $stars = null;
 
     #[ORM\Column(length: 40)]
@@ -76,17 +85,21 @@ class Building
     private ?string $identifier = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['building'])]
     private ?\DateTimeInterface $creation = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['building'])]
     private ?\DateTimeInterface $modification = null;
 
     /**
      * @var Collection<int, Character>
      */
     #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'building')]
+    #[Groups(['building'])]
     private Collection $characters;
 
+    #[Groups(['building'])]
     private array $_links = [];
 
     public function __construct()

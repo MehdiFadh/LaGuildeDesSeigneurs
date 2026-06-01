@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/CharacterService.php
+// Service gérant la logique métier des personnages (création, modification, validation par formulaire, suppression, sérialisation JSON avec HATEOAS, et sélection d'images par type/catégorie).
+
 namespace App\Service;
 
 // on ajoute le use pour supprimer le \ dans setCreation()
@@ -84,7 +87,7 @@ class CharacterService implements CharacterServiceInterface
         $dataArray = is_array($data) ? $data : json_decode($data, true);
         // Bad array
         if (null !== $data && !is_array($dataArray)) {
-            throw new UnprocessableEntityHttpException('Submitted data is not an array -> '.$data);
+            throw new UnprocessableEntityHttpException('Submitted data is not an array -> ' . $data);
         }
         // Submits form
         $form = $this->formFactory->create($formName, $character, ['csrf_protection' => false]);
@@ -92,9 +95,9 @@ class CharacterService implements CharacterServiceInterface
         // Gets errors
         $errors = $form->getErrors();
         foreach ($errors as $error) {
-            $errorMsg = 'Error '.get_class($error->getCause());
-            $errorMsg .= ' --> '.$error->getMessageTemplate();
-            $errorMsg .= ' '.json_encode($error->getMessageParameters());
+            $errorMsg = 'Error ' . get_class($error->getCause());
+            $errorMsg .= ' --> ' . $error->getMessageTemplate();
+            $errorMsg .= ' ' . json_encode($error->getMessageParameters());
             throw new \LogicException($errorMsg);
         }
     }
@@ -111,7 +114,7 @@ class CharacterService implements CharacterServiceInterface
         // Vérification du bon fonctionnement en introduisant une erreur
         $errors = $this->validator->validate($character);
         if (count($errors) > 0) {
-            $errorMsg = (string) $errors.'Wrong data for Entity -> ';
+            $errorMsg = (string) $errors . 'Wrong data for Entity -> ';
             $errorMsg .= json_encode($this->serializeJson($character));
             throw new UnprocessableEntityHttpException($errorMsg);
         }
@@ -125,7 +128,7 @@ class CharacterService implements CharacterServiceInterface
                 if ($object instanceof Building || $object instanceof Character) {
                     return $object->getIdentifier();
                 }
-                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "'.get_debug_type($object).'".');
+                throw new CircularReferenceException('A circular reference has been detected when serializing the object of class "' . get_debug_type($object) . '".');
             },
             'groups' => ['character'],
         ];
@@ -156,17 +159,26 @@ class CharacterService implements CharacterServiceInterface
             return;
         }
         $links = [
-            'self' => ['href' => '/characters/'.$object->getIdentifier()],
-            'update' => ['href' => '/characters/'.$object->getIdentifier()],
-            'delete' => ['href' => '/characters/'.$object->getIdentifier()],
+            'self' => ['href' => '/characters/' . $object->getIdentifier()],
+            'update' => ['href' => '/characters/' . $object->getIdentifier()],
+            'delete' => ['href' => '/characters/' . $object->getIdentifier()],
         ];
         $object->setLinks($links);
+    }
+
+    // Gets random characters from database
+    public function getRandom(int $number = 1): array
+    {
+        $characters = $this->findAll();
+        shuffle($characters);
+
+        return array_slice($characters, 0, $number);
     }
 
     // Gets random images
     public function getImages(int $number, ?string $kind = null): array
     {
-        $folder = __DIR__.'/../../public/images/';
+        $folder = __DIR__ . '/../../public/images/';
         $finder = new Finder();
         $finder
             ->files() // On veut des fichiers
@@ -175,12 +187,12 @@ class CharacterService implements CharacterServiceInterface
         ;
 
         if (null !== $kind) {
-            $finder->path('/'.$kind.'/');
+            $finder->path('/' . $kind . '/');
         }
         $images = [];
         foreach ($finder as $file) {
             // dump($file); // Si vous voulez voir le contenu de file
-            $images[] = str_replace(__DIR__.'/../../public', '', $file->getPathname());
+            $images[] = str_replace(__DIR__ . '/../../public', '', $file->getPathname());
         }
         shuffle($images);
 
@@ -192,4 +204,7 @@ class CharacterService implements CharacterServiceInterface
     {
         return $this->getImages($number, $kind);
     }
+
+
+
 }

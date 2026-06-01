@@ -45,7 +45,7 @@ class CharacterControllerTest extends WebTestCase
             "intelligence": 180,
             "strength": 180,
             "image": "/dames/anardil.webp",
-            "user": "{$userId}"
+            "utilisateur": "{$userId}"
             }
             JSON
         );

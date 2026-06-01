@@ -1,5 +1,8 @@
 <?php
 
+// src/Service/CharacterServiceInterface.php
+// Interface définissant le contrat du service de gestion des personnages (CRUD, validation, HATEOAS, gestion des images par catégorie).
+
 namespace App\Service;
 
 use App\Entity\Character;
@@ -31,4 +34,7 @@ interface CharacterServiceInterface
     public function getImages(int $number, ?string $kind = null);
 
     public function getImagesKind(string $kind, int $number);
+
+    // Gets random characters from database
+    public function getRandom(int $number = 1): array;
 }
