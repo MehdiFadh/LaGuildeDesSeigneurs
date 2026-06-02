@@ -13,6 +13,7 @@ use App\Form\CharacterType;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Bundle\PaginatorBundle\Pagination\SlidingPagination;
+use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;
@@ -147,10 +148,19 @@ class CharacterService implements CharacterServiceInterface
         );
     }
 
+    public function findByLifePaginated(int $level, $query): SlidingPagination
+    {
+        return $this->paginator->paginate(
+            $this->characterRepository->findByLifeGreaterThanOrEqual($level),
+            $query->getInt('page', 1),
+            min(100, $query->getInt('size', 10))
+        );
+    }
+
     public function setLinks($object)
     {
         // Teste si l'objet est une pagination
-        if ($object instanceof SlidingPagination) {
+        if ($object instanceof PaginationInterface) {
             // Si oui, on boucle sur les items
             foreach ($object->getItems() as $item) {
                 $this->setLinks($item);
@@ -158,6 +168,15 @@ class CharacterService implements CharacterServiceInterface
 
             return;
         }
+
+        // Teste si l'objet est un array
+        if (is_array($object)) {
+            foreach ($object as $item) {
+                $this->setLinks($item);
+            }
+            return;
+        }
+
         $links = [
             'self' => ['href' => '/characters/' . $object->getIdentifier()],
             'update' => ['href' => '/characters/' . $object->getIdentifier()],

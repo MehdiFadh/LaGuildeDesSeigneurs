@@ -27,6 +27,8 @@ interface CharacterServiceInterface
 
     public function findAllPaginated($query);
 
+    public function findByLifePaginated(int $level, $query);
+
     // Defines the links for HATEOAS
     public function setLinks($object);
 

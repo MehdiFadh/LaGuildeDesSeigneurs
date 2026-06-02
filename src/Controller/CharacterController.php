@@ -55,6 +55,50 @@ final class CharacterController extends AbstractController
         return JsonResponse::fromJsonString($this->characterService->serializeJson($characters));
     }
 
+    #[Route('/characters/life/{level}', name: 'app_character_index_life', requirements: ['level' => '\d+'], methods: ['GET'])]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns an array of Characters with life greater than or equal to level',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: Character::class))
+        )
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
+    #[OA\Tag(name: 'Character')]
+    #[OA\Parameter(
+        name: 'level',
+        in: 'path',
+        description: 'Minimum life level',
+        schema: new OA\Schema(type: 'integer'),
+        required: true
+    )]
+    #[OA\Parameter(
+        name: 'page',
+        in: 'query',
+        description: 'Number of the page',
+        schema: new OA\Schema(type: 'integer', default: 1),
+        required: true
+    )]
+    #[OA\Parameter(
+        name: 'size',
+        in: 'query',
+        description: 'Number of records',
+        schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 100),
+        required: true
+    )]
+    #[Cache(public: true, maxage: 3600, mustRevalidate: true)]
+    public function indexByLife(Request $request, int $level): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('characterIndex', null);
+        $characters = $this->characterService->findByLifePaginated($level, $request->query);
+
+        return JsonResponse::fromJsonString($this->characterService->serializeJson($characters));
+    }
+
     #[Route('/characters/{identifier}', requirements: ['identifier' => '^([a-z0-9]{40})$'], name: 'app_character_display', methods: ['GET'])]
     // DISPLAY
     #[OA\Parameter(
