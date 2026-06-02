@@ -40,6 +40,7 @@ security:
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc.json, roles: PUBLIC_ACCESS }
         - { path: ^/api-character, roles: PUBLIC_ACCESS }
+        - { path: ^/characters, roles: PUBLIC_ACCESS, methods: [GET] }
         - { path: ^/, roles: ROLE_USER }
 
 when@test:

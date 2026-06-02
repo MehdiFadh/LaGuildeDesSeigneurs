@@ -29,6 +29,7 @@ class AppFixtures extends Fixture
         $totalCharacters = 20;
         for ($i = 0; $i < $totalCharacters; ++$i) {
             $character = new Character();
+            $character->setLife(mt_rand(50, 200));
             $character->setKind(rand(0, 1) ? 'Dame' : 'Seigneur');
             $character->setName('Anardil'.$i);
             $character->setSlug('anardil'.$i);

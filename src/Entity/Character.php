@@ -125,6 +125,11 @@ class Character
     #[Groups(['character'])]
     private ?User $utilisateur = null;
 
+    #[ORM\Column(type: Types::SMALLINT, name: 'gls_life', nullable: true)]
+    #[Assert\PositiveOrZero]
+    #[Groups(['character'])]
+    private ?int $life = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -306,6 +311,18 @@ class Character
     public function setUtilisateur(?User $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getLife(): ?int
+    {
+        return $this->life;
+    }
+
+    public function setLife(?int $life): static
+    {
+        $this->life = $life;
 
         return $this;
     }

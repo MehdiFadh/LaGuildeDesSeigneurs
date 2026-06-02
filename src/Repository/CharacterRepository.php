@@ -55,4 +55,13 @@ class CharacterRepository extends ServiceEntityRepository
             ->getOneOrNullResult()
         ;
     }
+
+    public function findByLifeGreaterThanOrEqual(int $level)
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.life >= :level')
+            ->setParameter('level', $level)
+            ->getQuery()
+        ;
+    }
 }
