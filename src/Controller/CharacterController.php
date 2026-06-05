@@ -326,6 +326,8 @@ final class CharacterController extends AbstractController
         return new JsonResponse($images);
     }
 
+    
+
     public function __construct(
         private CharacterServiceInterface $characterService,
     ) {

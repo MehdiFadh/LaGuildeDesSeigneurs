@@ -45,6 +45,7 @@ class CharacterControllerTest extends WebTestCase
             "intelligence": 180,
             "strength": 180,
             "image": "/dames/anardil.webp",
+            "life": 150 // + testUpdate() = parfait,
             "utilisateur": "{$userId}"
             }
             JSON
@@ -57,7 +58,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDisplay(): void
     {
-        $this->client->request('GET', '/characters/'.self::$identifier);
+        $this->client->request('GET', '/characters/' . self::$identifier);
 
         $this->assertResponseCode(200);
         $this->assertJsonResponse();
@@ -118,7 +119,7 @@ class CharacterControllerTest extends WebTestCase
         // Tests with partial data array
         $this->client->request(
             'PUT',
-            '/characters/'.self::$identifier,
+            '/characters/' . self::$identifier,
             [],// Parameters
             [],// Files
             ['CONTENT_TYPE' => 'application/json'],// Server
@@ -140,7 +141,7 @@ class CharacterControllerTest extends WebTestCase
 
     public function testDelete()
     {
-        $this->client->request('DELETE', '/characters/'.self::$identifier);
+        $this->client->request('DELETE', '/characters/' . self::$identifier);
         $this->assertResponseCode(204);
     }
 
@@ -179,6 +180,14 @@ class CharacterControllerTest extends WebTestCase
         $this->client->request('GET', '/characters/images/tourmenteurs/3');
         $this->assertJsonResponse();
         $this->client->request('GET', '/characters/images/tourmenteuses/3');
+        $this->assertJsonResponse();
+    }
+
+    // Tests life level
+    public function testLifeLevel()
+    {
+        $this->client->request('GET', '/characters/life/100');
+        $this->assertResponseCode(200);
         $this->assertJsonResponse();
     }
 }
